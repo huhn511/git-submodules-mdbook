@@ -10,3 +10,6 @@
 [submodule "libraries/client-lib"]
 	path = libraries/client-lib
 	url = https://github.com/iotaledger/iota.rs
+[submodule "networks/chrysalis"]
+	path = networks/chrysalis
+	url = https://github.com/iotaledger/chrysalis-docs
