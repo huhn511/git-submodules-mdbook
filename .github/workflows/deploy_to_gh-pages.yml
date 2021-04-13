@@ -16,6 +16,7 @@ jobs:
         with:
           mdbook-version: 'latest'
 
+      - run: git submodule update --init --recursive
       - run: mdbook build
 
       - name: Deploy
