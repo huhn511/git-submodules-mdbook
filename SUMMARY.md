@@ -58,8 +58,8 @@
         - [FAQ](./faq.md)
         - [Contribution](./node-software/hornet/docs/Contribution.md)
         - [Code of Conduct](./node-software/hornet/docs/code_of_conduct.md)
-    - [Bee](./node-software/bee/docs/welcome.md)
-        - [Overview](./node-software/bee/docs/overview.md)
-        - [Setup a Node](./node-software/bee/docs/node/README.md)
-        - [Contribution](./node-software/bee/docs/contribution.md)
+    - [Bee](./node-software/Bee/docs/welcome.md)
+        - [Overview](./node-software/Bee/docs/overview.md)
+        - [Setup a Node](./node-software/Bee/docs/node/README.md)
+        - [Contribution](./node-software/Bee/docs/contribution.md)
 
