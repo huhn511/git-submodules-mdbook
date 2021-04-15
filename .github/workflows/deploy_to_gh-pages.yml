@@ -16,8 +16,10 @@ jobs:
         with:
           mdbook-version: 'latest'
 
+      - run: npm i
+      - run: npm run build
       - run: git submodule update --init --recursive
-      - run: npm run build && mdbook build
+      - run: mdbook build
 
       - name: Deploy
         uses: iotaledger/actions-gh-pages@v3
