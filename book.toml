@@ -15,6 +15,9 @@ git-repository-url = "https://github.com/mozilla/glean"
 additional-css = ["open-in.css", "./theme/custom/sidebar.css"]
 additional-js = ["./theme/custom/sidebar.js"]
 
+cname = "docs.einfachiota.de"
+
+
 [preprocessor.test]
 # The command can also be specified manually
 #command = "python3 ./test.py"
