@@ -1,0 +1,23 @@
+[book]
+authors = ["huhn511"]
+language = "en"
+multilingual = false
+src = ""
+title = "IOTA Documentation"
+
+
+[preprocessor.open-on-gh]
+command = "mdbook-open-on-gh"
+renderer = ["html"]
+
+[output.html]
+git-repository-url = "https://github.com/mozilla/glean"
+additional-css = ["open-in.css", "./theme/custom/sidebar.css"]
+additional-js = ["./theme/custom/sidebar.js"]
+
+[preprocessor.test]
+# The command can also be specified manually
+#command = "python3 ./test.py"
+# command = "node ./test.js"
+# renderer = ["html"]
+# Only run the `foo` preprocessor for

@@ -1,0 +1,25 @@
+.chapter-item.collapsible {
+    position: relative;
+}
+
+.chapter-item.collapsible a:after {
+    position: absolute;
+    top: 8px;
+    right: 0;
+    content: "";
+    width: 0; 
+    height: 0; 
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid var(--sidebar-fg);
+    opacity: .5;
+}
+
+.chapter-item.collapsible a:after:hover {
+    transition: opacity 300ms ease-in-out;
+    opacity: 1;
+}
+
+.chapter-item.collapsible.expanded a:after {
+    transform: rotate(180deg);
+}

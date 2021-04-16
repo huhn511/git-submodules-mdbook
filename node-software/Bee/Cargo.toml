@@ -1,0 +1,14 @@
+[workspace]
+members = [
+	"bee-api/bee-rest-api",
+	"bee-ledger",
+	"bee-message",
+	"bee-network",
+	"bee-node",
+	"bee-pow",
+	"bee-protocol",
+	"bee-snapshot",
+	"bee-storage/bee-storage-rocksdb",
+	"bee-tangle",
+	"bee-test",
+]

@@ -1,0 +1,15 @@
+[submodule "chrysalis-docs"]
+	path = networks/chrysalis-docs
+	url = https://github.com/iotaledger/chrysalis-docs
+[submodule "node-software/hornet"]
+	path = node-software/hornet
+	url = https://github.com/gohornet/hornet
+[submodule "node-software/Bee"]
+	path = node-software/Bee
+	url = https://github.com/iotaledger/bee
+[submodule "libraries/client-lib"]
+	path = libraries/client-lib
+	url = https://github.com/iotaledger/iota.rs
+[submodule "networks/chrysalis-docs"]
+	path = networks/chrysalis-docs
+	url = https://github.com/iotaledger/chrysalis-docs
