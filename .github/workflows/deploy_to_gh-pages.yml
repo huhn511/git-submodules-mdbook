@@ -19,10 +19,6 @@ jobs:
       - run: git submodule update --init --recursive
       - run: mdbook build
 
-      - run: npm i
-      - run: npm run build
-      - run: mkdir book/public/build && cp -r public/build/* book/public/build
-
       - name: Deploy
         uses: iotaledger/actions-gh-pages@v3
         with:
