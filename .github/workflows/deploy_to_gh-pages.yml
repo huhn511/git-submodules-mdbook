@@ -18,6 +18,8 @@ jobs:
 
       - run: git submodule update --init --recursive
       - run: mdbook build
+      - run: cp -r public/assets book/assets
+
 
       - name: Deploy
         uses: iotaledger/actions-gh-pages@v3
