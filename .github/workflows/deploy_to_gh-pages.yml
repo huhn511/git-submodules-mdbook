@@ -21,7 +21,7 @@ jobs:
 
       - run: npm i
       - run: npm run build
-      - run: cp -r public/build/* book/public/build
+      - run: mkdir book/public/build && cp -r public/build/* book/public/build
 
       - name: Deploy
         uses: iotaledger/actions-gh-pages@v3
