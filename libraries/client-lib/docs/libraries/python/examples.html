@@ -1,0 +1,828 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Examples - IOTA Documentation</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../../../../../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../../../../../favicon.png">
+        
+        <link rel="stylesheet" href="../../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../../css/chrome.css">
+        
+        <link rel="stylesheet" href="../../../../../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../../../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../../../../../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+        <link rel="stylesheet" href="../../../../../open-in.css">
+        
+        <link rel="stylesheet" href="../../../../.././theme/custom/sidebar.css">
+        
+
+        
+
+        <script src='../../../../../public/build/bundle.js'></script>
+
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../../../../docs/welcome.html"><strong aria-hidden="true">1.</strong> Welcome</a></li><li class="chapter-item expanded "><a href="../../../../../networks/index.html"><strong aria-hidden="true">2.</strong> Networks</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/introduction/welcome.html"><strong aria-hidden="true">2.1.</strong> Chrysalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/introduction/what_is_chrysalis.html"><strong aria-hidden="true">2.1.1.</strong> What is Chrysalis?</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/introduction/path_to_chrysalis.html"><strong aria-hidden="true">2.1.2.</strong> Path to Chrysalis</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/node-software/node-software.html"><strong aria-hidden="true">2.1.3.</strong> Node Software</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/libraries/overview.html"><strong aria-hidden="true">2.1.4.</strong> Libraries</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/libraries/client.html"><strong aria-hidden="true">2.1.4.1.</strong> Client Lib</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/libraries/wallet.html"><strong aria-hidden="true">2.1.4.2.</strong> Wallet Lib</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/guides/index.html"><strong aria-hidden="true">2.1.5.</strong> Guides</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/guides/dev_guide.html"><strong aria-hidden="true">2.1.5.1.</strong> Developer</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/guides/exchange_guide.html"><strong aria-hidden="true">2.1.5.2.</strong> Exchange</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/guides/hub_guide.html"><strong aria-hidden="true">2.1.5.3.</strong> Hub Migration</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/guides/backup_security.html"><strong aria-hidden="true">2.1.5.4.</strong> Backup and Security</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/testnet.html"><strong aria-hidden="true">2.1.6.</strong> Testnet</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/rfc.html"><strong aria-hidden="true">2.1.7.</strong> Protocol RFCs</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/resources.html"><strong aria-hidden="true">2.1.8.</strong> Resources</a></li><li class="chapter-item expanded "><a href="../../../../../networks/chrysalis-docs/docs/faq.html"><strong aria-hidden="true">2.1.9.</strong> FAQ</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../../../../libraries/index.html"><strong aria-hidden="true">3.</strong> Libraries</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/welcome.html"><strong aria-hidden="true">3.1.</strong> client-lib</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/overview/index.html"><strong aria-hidden="true">3.1.1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/index.html"><strong aria-hidden="true">3.1.2.</strong> Libraries</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/rust/index.html"><strong aria-hidden="true">3.1.2.1.</strong> Rust</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/rust/getting_started.html"><strong aria-hidden="true">3.1.2.1.1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/rust/examples.html"><strong aria-hidden="true">3.1.2.1.2.</strong> Examples</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/rust/api_reference.html"><strong aria-hidden="true">3.1.2.1.3.</strong> API Reference</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/rust/troubleshooting.html"><strong aria-hidden="true">3.1.2.1.4.</strong> Troubleshooting</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/nodejs/index.html"><strong aria-hidden="true">3.1.2.2.</strong> Node.js</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/nodejs/getting_started.html"><strong aria-hidden="true">3.1.2.2.1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/nodejs/examples.html"><strong aria-hidden="true">3.1.2.2.2.</strong> Examples</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/nodejs/api_reference.html"><strong aria-hidden="true">3.1.2.2.3.</strong> API Reference</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/nodejs/troubleshooting.html"><strong aria-hidden="true">3.1.2.2.4.</strong> Troubleshooting</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/python/index.html"><strong aria-hidden="true">3.1.2.3.</strong> Python</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/python/getting_started.html"><strong aria-hidden="true">3.1.2.3.1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/python/examples.html" class="active"><strong aria-hidden="true">3.1.2.3.2.</strong> Examples</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/python/api_reference.html"><strong aria-hidden="true">3.1.2.3.3.</strong> API Reference</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/libraries/python/troubleshooting.html"><strong aria-hidden="true">3.1.2.3.4.</strong> Troubleshooting</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/specs/index.html"><strong aria-hidden="true">3.1.3.</strong> Specification</a></li><li class="chapter-item expanded "><a href="../../../../../libraries/client-lib/docs/contribute.html"><strong aria-hidden="true">3.1.4.</strong> Contribute</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../../../../node-software/index.html"><strong aria-hidden="true">4.</strong> Node Software</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/welcome.html"><strong aria-hidden="true">4.1.</strong> HORNET</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/index.html"><strong aria-hidden="true">4.1.1.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.0/index.html"><strong aria-hidden="true">4.1.1.1.</strong> IOTA 1.0</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.0/setup.html"><strong aria-hidden="true">4.1.1.1.1.</strong> Setup HORNET</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.0/private_tangle.html"><strong aria-hidden="true">4.1.1.1.2.</strong> Run a private Tangle</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.0/entry_node.html"><strong aria-hidden="true">4.1.1.1.3.</strong> Hosting An Entry Node</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.5/index.html"><strong aria-hidden="true">4.1.1.2.</strong> Chrysalis IOTA 1.5</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.5/build.html"><strong aria-hidden="true">4.1.1.2.1.</strong> Build HORNET</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.5/run.html"><strong aria-hidden="true">4.1.1.2.2.</strong> Run HORNET</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/tutorials/1.5/private_tangle.html"><strong aria-hidden="true">4.1.1.2.3.</strong> Run a private tangle</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/configuration/index.html"><strong aria-hidden="true">4.1.2.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/configuration/config.html"><strong aria-hidden="true">4.1.3.</strong> config.json</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/configuration/peering.html"><strong aria-hidden="true">4.1.4.</strong> peering.json</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/api-reference.html"><strong aria-hidden="true">4.1.5.</strong> API Reference</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/troubleshooting.html"><strong aria-hidden="true">4.1.6.</strong> Troubleshooting</a></li><li class="chapter-item expanded "><a href="../../../../../faq.html"><strong aria-hidden="true">4.1.7.</strong> FAQ</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/Contribution.html"><strong aria-hidden="true">4.1.8.</strong> Contribution</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/hornet/docs/code_of_conduct.html"><strong aria-hidden="true">4.1.9.</strong> Code of Conduct</a></li></ol></li><li class="chapter-item expanded "><a href="../../../../../node-software/Bee/docs/welcome.html"><strong aria-hidden="true">4.2.</strong> Bee</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../../../node-software/Bee/docs/overview.html"><strong aria-hidden="true">4.2.1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/Bee/docs/node/index.html"><strong aria-hidden="true">4.2.2.</strong> Setup a Node</a></li><li class="chapter-item expanded "><a href="../../../../../node-software/Bee/docs/contribution.html"><strong aria-hidden="true">4.2.3.</strong> Contribution</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">IOTA Documentation</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../../../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/mozilla/glean" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
+<blockquote>
+<p>Please note: It is not recommended to store passwords/seeds on host's environment variables or in the source code in a production setup! Please make sure you follow our <a href="https://chrysalis.docs.iota.org/guides/backup_security.html">backup and security</a> recommendations for production use!</p>
+</blockquote>
+<h2 id="connecting-to-nodes"><a class="header" href="#connecting-to-nodes">Connecting to node(s)</a></h2>
+<p>All features of <code>iota.rs</code> library are accessible via an instance of <code>Client</code> class that provides high-level abstraction to all interactions over IOTA network (Tangle). This class has to be instantiated before starting any interactions with the library, or more precisely with <a href="https://chrysalis.docs.iota.org/node-software/node-software.html">IOTA nodes</a> that power IOTA network.</p>
+<p>You may be familiar with a fact that in case of IOTA 1.0 network one had to know an address of IOTA node to start participating to the network. It is no longer needed in IOTA 1.5 (Chrysalis) world. The library is designed to automatically choose a starting IOTA node based on the network type one would like to participate in: <code>testnet</code> or <code>mainnet</code>.</p>
+<p>So very simplistic example how to connect to <a href="https://chrysalis.docs.iota.org/testnet.html">IOTA testnet</a> is the following one:</p>
+<pre><code class="language-python">import iota_client
+
+# client will connect to testnet by default
+client = iota_client.Client()
+print(client.get_info())
+</code></pre>
+<p>Output example of <code>get_info()</code> function of the <code>Client</code> instance:</p>
+<pre><code class="language-json">{
+    'name': 'HORNET',
+    'version': '0.6.0-alpha',
+    'is_healthy': True,
+    'network_id': 'testnet6',
+    'bech32_hrp': 'atoi',
+    'latest_milestone_index': 192448,
+    'confirmed_milestone_index': 192448,
+    'pruning_index': 174931,
+    'features': ['PoW'],
+    'min_pow_score': 4000.0
+}
+</code></pre>
+<p>The most important properties:</p>
+<ul>
+<li><code>is_healthy</code>: indicates whether the given node is in sync with the network and so it is safe to use it. Even if a node is up and running it may not be fully prepared to process your API calls properly. The node should be &quot;synced&quot;, meaning should be aware of all TXs in the Tangle. It is better to avoid not fully synced nodes. A node healthiness can be alternatively obtained also with a method <code>Client.get_health()</code></li>
+<li><code>bech32_hrp</code>: it indicates whether the given node is a part of testnet (<code>atoi</code>) or mainnet (<code>iota</code>). See more info regarding <a href="../../welcome.html#iota-15-address-anatomy">IOTA address format</a></li>
+</ul>
+<p><em>Please note, when using node load balancers then mentioned health check may be quite useless since follow-up API calls may be served by different node behind the load balancer that may have not been actually checked. One should be aware of this fact and trust the given load balancer participates only with nodes that are in healthy state. <code>iota.rs</code> library additionally supports a management of internal node pool and so load-balancer-like behavior can be mimicked using this feature locally.</em></p>
+<p>Needless to say, the <code>Client</code> class constructor provides several parameters via which the process can be closely managed.</p>
+<p>The most common ones:</p>
+<ul>
+<li><code>network</code>: can be <code>Testnet</code> or <code>Mainnet</code>. It instructs the library whether to automatically select testnet nodes or mainnet nodes</li>
+<li><code>node</code>: specify address of actual running IOTA node that should be used to communicate with (in format <code>https://node:port</code>), for ex: https://api.lb-0.testnet.chrysalis2.com:443</li>
+<li><code>node_pool_urls</code>: library also supports a management of pool of nodes. You can provide a list of nodes and library manages access to them automatically (selecting them based on their sync status)</li>
+<li><code>local_pow</code>: <code>local_pow==True</code> (by default) means a <code>Proof-of-work</code> is done locally and not remotely</li>
+<li><code>node_sync_disabled</code>: <code>node_sync_disabled==False</code> (by default) means that library checks for sync status of node(s) periodically before its use. <code>node_sync_disabled==True</code> means library also uses nodes that <em>are not</em> in sync with network. This parameter is usually useful if one would like to interact with local test node that is not fully synced. This parameter should not be used in production</li>
+</ul>
+<p>If <code>node_pool_urls</code> is provided then the library periodically checks in some interval (argument <code>node_sync_interval</code>) whether node is in sync or not.</p>
+<h2 id="generating-seed-and-addresses"><a class="header" href="#generating-seed-and-addresses">Generating seed and addresses</a></h2>
+<p>Since the IOTA network is permission-less type of network, anybody is able to use it and interact with it. No central authority is required at any stage. So anybody is able to generate own <code>seed</code> and then deterministically generate respective private keys/addresses.</p>
+<blockquote>
+<p>Please note, it is highly recommended to NOT use online seed generators at all. The seed is the only key to the given addresses. Anyone who owns the seed owns also all funds related to respective IOTA addresses (all of them).</p>
+</blockquote>
+<blockquote>
+<p>We strongly recommend to use official <code>wallet.rs</code> library together with <code>stronghold.rs</code> enclave for value-based transfers. This combination incorporates the best security practices while dealing with seeds, related addresses and <code>UTXO</code>. See more information on <a href="https://chrysalis.docs.iota.org/libraries/wallet.html">Chrysalis docs</a>.</p>
+</blockquote>
+<p>IOTA 1.5 (Chrysalis) uses <code>Ed25519</code> signature scheme and address is usually represented by Bech32 (checksummed base32) format string of 64 characters.</p>
+<p>A root of <code>Ed25519</code> signature scheme is basically a <code>32-byte (256-bit)</code> uniformly randomly generated seed based on which all private keys and corresponding addresses are generated. In the examples below, the seed is represented by a string of 64 characters using <code>[0-9a-f]</code> alphabet (32 bytes encoded in hexadecimal).</p>
+<p>Seed can be for example generated using SHA256 algorithm on some random input generated by cryptographically secure pseudo-random generator, such as <code>os.urandom()</code>:</p>
+<pre><code class="language-python">import os
+import hashlib
+
+rnd_seed = hashlib.sha256(os.urandom(256)).hexdigest()
+print(rnd_seed)
+</code></pre>
+<p>Seed examples (a single seed per line):</p>
+<pre><code class="language-plaintext">4892e2265c45734d07f220294b1697244a8ab5beb38ba9a7d57aeebf36b6e84a
+37c4aab22a5883595dbc77907c1626c1be39d104df39c5d5708423c0286aea89
+e94346bce41402155ef120e2525fad2d0bf30b10a89e4b93fd8471df1e6a0981
+...
+</code></pre>
+<blockquote>
+<p>In modern wallet implementations, such as our <a href="https://chrysalis.docs.iota.org/libraries/wallet.html">wallet.rs library</a> and <a href="https://blog.iota.org/firefly-beta-release/">firefly wallet</a>, the seed is usually generated from a <code>seed mnemonic</code> (<code>seed phrase</code>), using <a href="https://en.bitcoin.it/wiki/BIP_0039">BIP39 standard</a>, to be better memorized/stored by humans. It is based on randomly generated list of english words and later used to generate the seed. Either way, the seed is a root for all generated private keys and addresses</p>
+</blockquote>
+<h3 id="addresskey-space"><a class="header" href="#addresskey-space">Address/key space</a></h3>
+<p>Before an actual address generation process, let's quickly focus on <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki">BIP32</a> standard that describes an approach to <em>Hierarchical Deterministic Wallets</em>. The standard was improved by <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki">BIP44</a> lately.</p>
+<p>These standards define a tree structure as a base for address and key space generation which is represented by a <code>derivation path</code>:</p>
+<pre><code class="language-plaintext">m / purpose / coin_type / account / change / address_index
+</code></pre>
+<ul>
+<li><code>m</code>: a master node (seed)</li>
+<li><code>purpose</code>: constant which is {44}</li>
+<li><code>coin_type</code>: a constant set for each crypto currency. IOTA = 4218, for instance.</li>
+<li><code>account</code>: account index. Zero-based increasing <code>int</code>. This level splits the address/key space into independent branches (ex. user identities) which each has own set of addresses/keys</li>
+<li><code>change</code>: change index which is <code>{0, 1}</code>, also known as <code>wallet chain</code>.<br />
+There are two independent chain of addresses/keys. <code>0</code> is reserved for public addresses (for coin receival) and <code>1</code> is reserved for internal (also known as change) addresses to which transaction change is returned. <em>In comparison to IOTA 1.0, IOTA 1.5 is totally fine with address reuse, and so it is, technically speaking, totally valid to return transaction change to the same originating address. So it is up to developers whether to leverage it or not. <code>iota.rs</code> library and its sibling <code>wallet.rs</code> help with either scenario</em></li>
+<li><code>address_index</code>: address index. Zero-based increasing <code>int</code> that indicates an address index</li>
+</ul>
+<p>As outlined, there is a quite large address/key space that is secured by a single unique seed.</p>
+<p>And there are few additional interesting notes:</p>
+<ul>
+<li>Each level defines a completely different subtree (subspace) of addresses/keys and those are never mixed up</li>
+<li>The hierarchy is ready to &quot;absorb&quot; addresses/keys for many different coins at the same time (<code>coin_type</code>), and all those coins are secured by the same seed.<br />(So basically any BIP32/44-compliant wallet is potentially able to manage any BIP32/44-compliant coin(s))</li>
+<li>There may be also other <code>purposes</code> in the future however let's consider a single purpose as of now. The constant <code>44</code> stands for BIP44</li>
+<li>The standard was agreed upon different crypto communities, although not all <code>derivation path</code> components are always in active use. For example, <code>account</code> is not always actively leveraged across crypto space (if this is a case then there is usually <code>account=0</code> used)</li>
+<li>Using different <code>accounts</code> may be useful to split addresses/key into some independent spaces and it is up to developers to implement.<br />
+<em>Please note, it may have a negative impact on a performance while <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#account-discovery">account discovery</a> phase. So if you are after using many multiple accounts then you may be interested in our stateful library <a href="https://chrysalis.docs.iota.org/libraries/wallet.html">wallet.rs</a> that incorporates all business logic needed to efficiently manage independent accounts. Also our <a href="https://chrysalis.docs.iota.org/guides/exchange_guide.html">exchange guide</a> provides some useful tips how different accounts may be leveraged</em></li>
+</ul>
+<p><img src="address_generation.svg" alt="address_generation" /></p>
+<p>So in case of IOTA 1.5 (Chrysalis), the derivation path of address/key space is <code>[seed]/44/4218/{int}/{0,1}/{int}</code>. The levels <code>purpose</code> and <code>coin_type</code> are given, the rest levels are up to developers to integrate.</p>
+<h3 id="generating-addresses"><a class="header" href="#generating-addresses">Generating address(es)</a></h3>
+<p>IOTA addresses are generated via <code>Client.get_addresses()</code> function that returns a list of tuples with generated addresses. Considering the previous chapter about individual address/key spaces, it becomes quite clear what all used input function arguments are for.</p>
+<p><em>Please note: for the examples outlined below, an example seed <code>b3d7092195c36d47133ff786d4b0a1ef2ee6a0052f6e87b6dc337935c70c531e</code> was used via environment variable called <code>IOTA_SEED_SECRET</code>. This seed serves for training purposes only.</em></p>
+<p>The whole process is deterministic which means the output is the same as long as the seed is the same:</p>
+<pre><code class="language-python">import os
+import iota_client
+
+# Get the seed from environment variable
+IOTA_SEED_SECRET = os.getenv('IOTA_SEED_SECRET')
+if not IOTA_SEED_SECRET:
+    raise Exception(&quot;Please define environment variable called `IOTA_SEED_SECRET`&quot;)
+
+client = iota_client.Client()
+
+address_changed_list = client.get_addresses(
+    seed=IOTA_SEED_SECRET,
+    account_index=0,
+    input_range_begin=0,
+    input_range_end=10,
+    get_all=True
+)
+print(address_changed_list)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-json">[('atoi1qp9427varyc05py79ajku89xarfgkj74tpel5egr9y7xu3wpfc4lkpx0l86', False),
+ ('atoi1qzfvkkp398v7hhvu89fu88hxctf7snwc9sf3a3nd7msfv77jk7qk2ah07s3', True),
+ ('atoi1qq4t98j5y8wxkaujue99mjwqcp6jvvmsd5lv0755sz7dtjdz3p2lydv76sy', False),
+ ('atoi1qrhzhjxc4z8vpwjt3hafs5xpdng5katqe890p0h95mc0l273j8yzxn7r4hc', True),
+ ('atoi1qputu0yvfvxd7g39wf4rc67e0f0dyhl6enxu9jxnsrjqmemh067tw7qelyc', False),
+ ('atoi1qptg5w2x47qwjf3gpqt3h7d2ey5x7xf8v7qtt29gkxt4mjfjfc28sutvd8a', True),
+ ('atoi1qprvelq9paakh72fgm6j2kf8kexadw3t5xljer9dpsep5c7wx5mjwdxch6z', False),
+ ('atoi1qrwk37tz47ddng9kpxfflkpz5tplcq7ll56v4acam04307xk70l7uf6wg8j', True),
+ ('atoi1qper3zr5xe9x0wqs35ytwh622870g44frkyygdhs0ds8yejle3xujhq7dx3', False),
+ ('atoi1qq6lkr9hucfylqjaqphu0stvk8pcmsx98r7ukuq40asszwmqytlnc058thk', True),
+ ('atoi1qzpn7se3ryhscmqg404pycxzvfpt8v4xn8aul0tqdh00xsncgnxu7na7zjj', False),
+ ('atoi1qz4qqakty9qytw8fk9shelt9lwlvv83s5ggt3wjag9fkgcc74z78w4l86y5', True),
+ ('atoi1qp20uddchglqry0l5qnjg5aln8d5rk2v5l45hwrxv9z0daxs7u6xcsh4077', False),
+ ('atoi1qrlqm2u5txxxnjx22fxq0jfjzk6l4nwnue6ht5pepk65m2f4xmxqynmxu2m', True),
+ ('atoi1qqydc70mpjdvl8l2wyseaseqwzhmedzzxrn4l9g2c8wdcsmhldz0ulwjxpz', False),
+ ('atoi1qrkjennxyl2xcqem6x69ya65sasma33z0ux872k846lqft0s3qf7k6lqpft', True),
+ ('atoi1qr4yuekp30ff7mnnnjwy9tdhynxmlmkpuxf70qurtwudp2zpf3jeyw4uh37', False),
+ ('atoi1qp6m5sz5ayjtccfxapdk5lp4qkheyfg0emzntmulyxzftps730vcul8dmqr', True),
+ ('atoi1qzrwhkzhu67fqltfffwljejawdcghedukpgu9x6tzevwlnq89gmfjtayhgz', False),
+ ('atoi1qpehxcp24z947dgupjqc9ktkn5ylmdxqqnx83m7xlajnf8005756u4n7z77', True)]
+</code></pre>
+<ul>
+<li>Each tuple contains <code>address</code> and <code>bool</code> value indicating the given address is a <code>change</code> address or not.<br />
+<code>True</code> means the given address is a change address (internal). So basically we've got two independent sets of addresses (10 items per each)</li>
+<li>This behavior is controlled via <code>get_all</code> argument. <code>get_all=False</code> (default) means to generate only public addresses</li>
+</ul>
+<p>IOTA address is represented by a checksumed base 32 string (Bech32) and you can see a detailed explanation on <a href="https://chrysalis.docs.iota.org/guides/index.html#iota-15-address-anatomy">Chrysalis docs</a>.
+Just a recap:</p>
+<ul>
+<li>If an address starts with <code>atoi</code> then it means it is related to <code>testnet</code>. <code>iota</code> stands for mainnet</li>
+<li>Number <code>1</code> at 5<sup>th</sup> position is just a separator</li>
+<li>The last 6 characters are reserved for a checksum</li>
+</ul>
+<p>To quickly validate any IOTA address, there is a convenience function <code>Client.is_address_valid()</code> that returns <code>bool</code> value. Needless to say, performing a sanity check of an address before its use is an advisable practice.</p>
+<h2 id="checking-a-balance"><a class="header" href="#checking-a-balance">Checking a balance</a></h2>
+<p><em>In Chrysalis testnet, there is a faucet service that provides test tokens to any testnet address: https://faucet.testnet.chrysalis2.com/</em></p>
+<p>There are three common api calls that can be leveraged:</p>
+<ul>
+<li><code>Client.get_address_balance(address: str)</code>: it expects a single address in Bech32 format and returns <code>dict</code> with a balance for the address</li>
+<li><code>Client.get_address_balances(list[str])</code>: a convenience function that expects <code>list</code> of addresses in Bech32 format and returns list of <code>dict</code> with balances for all given addresses</li>
+<li><code>Client.get_balance(seed, account_index (optional), initial_address_index(optional), gap_limit(optional))</code>: a convenience function that combines <code>Client.get_addresses()</code> and <code>Client.get_address_balances()</code> api calls. It returns a combined balance for the provided seed and its wallet account index</li>
+</ul>
+<p><em>Please note: <code>Client.get_address_balance()</code> and <code>Client.get_address_balances()</code> return address(es) in hex-encoded Ed25519 address format, which is the format returned by underlying node software:</em></p>
+<pre><code class="language-python">import os
+import iota_client
+
+# Get the seed from environment variable
+IOTA_SEED_SECRET = os.getenv('IOTA_SEED_SECRET')
+if not IOTA_SEED_SECRET:
+    raise Exception(&quot;Please define environment variable called `IOTA_SEED_SECRET`&quot;)
+
+client = iota_client.Client()
+
+print(&quot;Return a balance for a single address:&quot;)
+print(
+    client.get_address_balance(&quot;atoi1qp9427varyc05py79ajku89xarfgkj74tpel5egr9y7xu3wpfc4lkpx0l86&quot;)
+)
+
+print(&quot;Return a balance for the given seed and account_index:&quot;)
+print(
+    client.get_balance(
+        seed=IOTA_SEED_SECRET,
+        account_index=0,
+        initial_address_index=0
+    )
+)
+</code></pre>
+<p>Example of output:</p>
+<pre><code class="language-json">Return balance for a single address:
+{
+    'address_type': 0,
+    'address': '4b55799d1930fa049e2f656e1ca6e8d28b4bd55873fa6503293c6e45c14e2bfb',
+    'balance': 10000000
+}
+
+Return balance for the given seed and account_index:
+10000000
+</code></pre>
+<ul>
+<li><code>address_type</code> indicates type of address. Value 0 denotes a Ed25519 address (currently the default for IOTA 1.5 network)</li>
+</ul>
+<p><code>Client.get_balance()</code> performs a several tasks under the hood.
+It starts generating addresses for the provided <code>seed</code> and <code>account_index</code> from <code>initial_address_index</code>, and checks for a balance of each of the generated addresses. Since it does not know how many addresses are used in fact, there is a condition set by <code>gap_limit</code> argument when to stop searching. If <code>gap_limit</code> amount of addresses in a row have no balance the function returns result and searching does not continue.</p>
+<h2 id="messages-payload-and-transactions"><a class="header" href="#messages-payload-and-transactions">Messages, payload and transactions</a></h2>
+<p>Before we continue, let's introduce some additional terms that describe an unit that is actually broadcasted in IOTA 1.5 network.</p>
+<p>In comparison to original IOTA 1.0, IOTA 1.5 introduced some fundamental changes to the underlying data structure. The original concept of <code>transactions</code> and <code>bundles</code> is gone, and has been replaced by a concept of <code>messages</code> and <code>payloads</code>.</p>
+<p><code>Message</code> is a data structure that is actually being broadcasted in IOTA network and represent a node (vertex) in the Tangle graph. It can refer to up to 8 previous messages and once a message was attached to the Tangle and approved by a milestone, the Tangle structure ensures the content of the message is unaltered. Every message is referenced by <code>message_id</code> which is based on a hash algorithm of binary content of the message. <code>Message</code> is an atomic unit that is confirmed by network as a whole.</p>
+<blockquote>
+<p>IOTA is no longer based on ternary. IOTA 1.5 (Chrysalis) uses binary to encode and broadcast all underlying data entities</p>
+</blockquote>
+<p><code>Message</code> is broadcasted using a binary format, is arbitrary size (up to 35 kB) and it can hold a variable sets of information so called <code>payloads</code>. Number of payloads a single message can encapsulate is not given (even a message without any <code>payload</code> at all is completely valid).</p>
+<p><code>Payload</code> represents a layer of concern. Some payloads may change a state of the ledger (ex. <code>transactions</code>) and some may provide extra features to some specific applications and business use cases (ex. <code>indexed data</code>).</p>
+<p>There are already implemented core payloads, such as <code>SignedTransaction</code>, <code>MilestonePayload</code> and <code>IndexationPayload</code> but the message and payload definition is generic enough to incorporate any future payload(s) the community agrees upon.</p>
+<p>Needless to say, IOTA network ensures the outer structure of message itself is valid and definitely aligned with a network consensus protocol, however the inner structure is very flexible, future-proof, and offer an unmatched network extensibility.</p>
+<p><img src="messages_in_tangle.svg" alt="messages_in_tangle" /></p>
+<p>The current IOTA 1.5 network incorporates the following core payloads:</p>
+<ul>
+<li><code>SignedTransaction</code>: payload that describes <code>UTXO</code> transactions that are cornerstone of value-based transfers in IOTA network. Via this payload, <code>message</code> can be also cryptographically signed</li>
+<li><code>MilestonePayload</code>: payload that is emitted by Coordinator</li>
+<li><code>IndexationPayload</code>: payload that enables addition of an index to the encapsulating message, as well as some arbitrary data. The given index can be later used to search the message(s)</li>
+</ul>
+<h3 id="unspent-transaction-output-utxo"><a class="header" href="#unspent-transaction-output-utxo">Unspent Transaction Output (UTXO)</a></h3>
+<p>Originally, the IOTA used an <code>account-based model</code> for tracking individual iota tokens: <em>each IOTA address holds a number of tokens and aggregated number of tokens from all iota addresses is equal to total supply.</em></p>
+<p>In contrary, IOTA 1.5 uses <code>unspent transaction output</code> model, so called <code>UTXO</code>. It is based on an idea to track unspent amount of tokens via data structure called <code>output</code>.</p>
+<p>Simplified analogy:</p>
+<ul>
+<li>There is 100 tokens recorded in the ledger as <code>Output A</code> and this output belongs to Alice. So <strong>initial state of ledger</strong>: <code>Output A</code> = 100 tokens</li>
+<li>Alice sends 20 tokens to Paul, 30 tokens to Linda and keeps 50 tokens at her disposal</li>
+<li>Her 100 tokens are recorded as <code>Output A</code> and so she has to divide (spent) tokens and create three new outputs:<br /><code>Output B</code> with 20 tokens that goes to Paul, <code>Output C</code> with 30 tokens that goes to Linda and finally <code>Output D</code> with the rest 50 tokens that she keep for herself</li>
+<li><strong>Original <code>Output A</code></strong> was completely spent and can't be used any more. It has been spent and so <strong>becomes irrelevant</strong> to ledger state</li>
+<li><strong>New state of ledger</strong>: <code>Output B</code> = 20 tokens, <code>Output C</code> = 30 tokens and <code>Output D</code> = 50 tokens</li>
+<li>Total supply remains the same. Just number of outputs differs and some outputs were replaced by other outputs in the process</li>
+</ul>
+<p><img src="utxo.svg" alt="utxo" /></p>
+<p>The key takeaway of the outlined process is the fact that each unique <code>output</code> can be spent <strong>only once</strong>. Once the given <code>output</code> is spent, can't be used any more and is irrelevant in regards to the ledger state.</p>
+<p>So even if Alice still wants to keep remaining tokens at her fingertips, those tokens have to be moved to completely new <code>output</code> that can be for instance still tight to the same Alice's iota address as before.</p>
+<p>Every <code>output</code> stores also information about an IOTA address to which it is coupled with. So addresses and tokens are indirectly coupled via <code>outputs</code>.
+So basically sum of outputs and their amounts under the given address is a balance of the given address, ie. the number of tokens the given address can spend. And sum of all unspent outputs and theirs amounts is equal to the total supply.</p>
+<p>Before the chapter is wrapped up, one thing was left unexplained: <em>&quot;how outputs are being sent and broadcasted to network?&quot;</em> <code>Outputs</code> are being sent encapsulated in a <code>message</code> as a part of <code>SignedTransaction</code> payload.</p>
+<h2 id="outputs"><a class="header" href="#outputs">Outputs</a></h2>
+<p>There are three functions to get <code>UTXO</code> outputs (related to the given address):</p>
+<ul>
+<li><code>Client.get_address_outputs(str)</code>: it expects address in Bech32 format and returns <code>list[dict]</code> of <code>transaction_ids</code> and respective <code>indexes</code></li>
+<li><code>Client.get_output(str)</code>: it expects <code>output_id</code> and returns the UTXO output associated with it</li>
+<li><code>Client.find_outputs(output_ids (optional), addresses (optional))</code>: it is a bit more general and it searches for <code>UTXO</code> outputs associated with the given <code>output_ids</code> and/or <code>addresses</code></li>
+</ul>
+<p><code>Client.get_address_outputs(str)</code> returns <code>transaction_ids</code> and <code>indexes</code> in a raw form (in bytes) defined on protocol level and so usually some quick conversion is needed:</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+outputs = client.get_address_outputs(&quot;atoi1qp9427varyc05py79ajku89xarfgkj74tpel5egr9y7xu3wpfc4lkpx0l86&quot;)
+for output in outputs:
+    print(f&quot;Output index: {output['index']}; raw transaction id: {output['transaction_id']}&quot;)
+    encoded_hex = &quot;&quot;.join(f&quot;{i:0&gt;2x}&quot; for i in output[&quot;transaction_id&quot;]) + f&quot;{output['index']:0&gt;4x}&quot;
+    print(f&quot;`output_id` encoded in hex: {encoded_hex}&quot;)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-plaintext">Output index: 0; raw transaction id: [162, 44, 186, 6, 103, 201, 34, 203, 177, 248, 189, 202, 249, 112, 178, 168, 129, 204, 214, 232, 142, 47, 204, 229, 3, 116, 222, 42, 172, 124, 55, 114]
+`output_id` encoded in hex: a22cba0667c922cbb1f8bdcaf970b2a881ccd6e88e2fcce50374de2aac7c37720000
+</code></pre>
+<ul>
+<li>as a result, <code>UTXO</code> output is represented by output <code>index</code> and <code>transaction_id</code>. <code>transaction_id</code> is basically a list of 32 <code>bytes</code>. <code>index</code> is 2-bytes (16bits) <code>uint</code></li>
+<li><code>index</code> and <code>transaction_id</code> is usually combined into single hex string of 68 characters = 32 * 2 chars (<code>transaction_id</code>; 32 bytes in hex) + 4 chars (<code>index</code>; 2 bytes in hex).<br />
+The resulting <code>output_id</code> is the unique id of the given <code>output</code></li>
+</ul>
+<p>Then the function <code>Client.get_output(str)</code> can be used to get details about the given <code>output_id</code>:</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+print(
+    client.get_output(&quot;a22cba0667c922cbb1f8bdcaf970b2a881ccd6e88e2fcce50374de2aac7c37720000&quot;)
+)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-json">{'message_id': 'f51fb2839e0a24d5b4a97f1f5721fdac0f1eeafd77645968927f7c2f4b46565b',
+ 'transaction_id': 'a22cba0667c922cbb1f8bdcaf970b2a881ccd6e88e2fcce50374de2aac7c3772',
+ 'output_index': 0,
+ 'is_spent': False,
+ 'output': {'treasury': None,
+  'signature_locked_single': {'kind': 0,
+   'address': {'ed25519': {'kind': 0,
+     'address': '4b55799d1930fa049e2f656e1ca6e8d28b4bd55873fa6503293c6e45c14e2bfb'}},
+   'amount': 10000000},
+  'signature_locked_dust_allowance': None}
+}
+</code></pre>
+<p>A function <code>Client.find_outputs()</code> is a convenient shortcut combining both mentioned methods in a single call:</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+client.find_outputs(addresses=[&quot;atoi1qp9427varyc05py79ajku89xarfgkj74tpel5egr9y7xu3wpfc4lkpx0l86&quot;])
+</code></pre>
+<ul>
+<li>it supports two arguments, a list of <code>output_ids</code> or a list of <code>addresses</code></li>
+</ul>
+<p>Output example:</p>
+<pre><code class="language-json">{'message_id': 'f51fb2839e0a24d5b4a97f1f5721fdac0f1eeafd77645968927f7c2f4b46565b',
+ 'transaction_id': 'a22cba0667c922cbb1f8bdcaf970b2a881ccd6e88e2fcce50374de2aac7c3772',
+ 'output_index': 0,
+ 'is_spent': False,
+ 'output': {'treasury': None,
+  'signature_locked_single': {'kind': 0,
+   'address': {'ed25519': {'kind': 0,
+     'address': '4b55799d1930fa049e2f656e1ca6e8d28b4bd55873fa6503293c6e45c14e2bfb'}},
+   'amount': 10000000},
+  'signature_locked_dust_allowance': None}
+}
+</code></pre>
+<ul>
+<li><code>message_id</code>: refer to the encapsulating message in which the transaction was sent</li>
+<li><code>transaction_id</code>, <code>output_index</code>: refer to the given output within the <code>SignedTransaction</code> payload. There may be several different <code>outputs</code> involved in a single transaction and so just <code>transaction_id</code> is not enough</li>
+<li><code>output</code>: this section provides details about the iota address to which the given <code>unspent transaction output</code> is coupled with</li>
+<li><code>amount</code>: state an amount of tokens related to the <code>output</code></li>
+<li><code>is_spent</code>: of course, very important one indicating whether the given <code>output</code> is a part of the actual ledger state or not. As mentioned above, if an output was already spent, it is not part of ledger state any more and was replaced by some other <code>output(s)</code> in the process</li>
+</ul>
+<p>So this is quite interesting part, notice the <code>output_id</code> that was used in a function call to get output details is the same as a combination of <code>transaction_id</code> and <code>output index</code>.</p>
+<p>This way a transaction is tightly coupled with <code>outputs</code> since <code>SignedTransaction</code> payload is a main vehicle how <code>outputs</code> are being created and spent, and altogether everything is encapsulated in a <code>message</code>.</p>
+<h2 id="messages"><a class="header" href="#messages">Messages</a></h2>
+<p>As mentioned above, the <code>message</code> is encapsulating data structure that is being actually broadcasted across network. It is an atomic unit that is accepted/rejected as a whole.</p>
+<p>There is a convenient function <code>Client.message()</code> that prepares a message instance and sends it over a network. It accepts wide range of input parameters and can help with any kind of message type to be broadcasted.</p>
+<p>The simplest message that can be broadcasted is a message without any particular payload:</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+message = client.message()
+print(message)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-json">{'message_id': 'e2daa4c6b012b615becd6c12189b2c9e701ba0d53b31a15425b21af5105fc086',
+ 'network_id': 7712883261355838377,
+ 'parents': ['0e2705ce50fec88f896663d4b7d562e74cbcfdd951ac482b1f03cfa5f27396d7',
+  '0f5a0b2041766127c3f3bff2dd653b450b72e364765fcc805a40423c59ed01f9',
+  '20635b30aee437575d7e6abdf6629eec80543bee30848b0abdda2200fc11a977',
+  'da97cd6cfcbb854b8fd3f064c8459c5c9eae80dbd5ef594a3e1a26dcb8fc078c'],
+ 'payload': None,
+ 'nonce': 2305843009213869242}
+</code></pre>
+<ul>
+<li><code>message_id</code> is an unique id that refers to the given message in network</li>
+<li>as mentioned above, every message in the Tangle should refer to up to 8 other messages, those are indicated in the section <code>parents</code></li>
+<li>no actual <code>payload</code> was given in this example message (<code>payload=None</code>)</li>
+<li><code>nonce</code> refer to a result of proof-of-work</li>
+</ul>
+<p>Once a message is broadcasted, there are two main functions that can be used to read all information about the given message from the Tangle (<code>Client.get_message_data()</code> and <code>Client.get_message_metadata()</code>):</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+message = client.get_message_data(&quot;e2daa4c6b012b615becd6c12189b2c9e701ba0d53b31a15425b21af5105fc086&quot;)
+message_meta = client.get_message_metadata(&quot;e2daa4c6b012b615becd6c12189b2c9e701ba0d53b31a15425b21af5105fc086&quot;)
+
+print(&quot;Message meta data:&quot;)
+print(message_meta)
+print(&quot;Message data:&quot;)
+print(message)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-json">Message meta data:
+{'message_id': 'e2daa4c6b012b615becd6c12189b2c9e701ba0d53b31a15425b21af5105fc086',
+ 'parent_message_ids': ['0e2705ce50fec88f896663d4b7d562e74cbcfdd951ac482b1f03cfa5f27396d7',
+  '0f5a0b2041766127c3f3bff2dd653b450b72e364765fcc805a40423c59ed01f9',
+  '20635b30aee437575d7e6abdf6629eec80543bee30848b0abdda2200fc11a977',
+  'da97cd6cfcbb854b8fd3f064c8459c5c9eae80dbd5ef594a3e1a26dcb8fc078c'],
+ 'is_solid': True,
+ 'referenced_by_milestone_index': 284866,
+ 'milestone_index': None,
+ 'ledger_inclusion_state': {'state': 'NoTransaction'},
+ 'conflict_reason': None,
+ 'should_promote': None,
+ 'should_reattach': None}
+
+Message data:
+ {'message_id': 'e2daa4c6b012b615becd6c12189b2c9e701ba0d53b31a15425b21af5105fc086',
+ 'network_id': 7712883261355838377,
+ 'parents': ['0e2705ce50fec88f896663d4b7d562e74cbcfdd951ac482b1f03cfa5f27396d7',
+  '0f5a0b2041766127c3f3bff2dd653b450b72e364765fcc805a40423c59ed01f9',
+  '20635b30aee437575d7e6abdf6629eec80543bee30848b0abdda2200fc11a977',
+  'da97cd6cfcbb854b8fd3f064c8459c5c9eae80dbd5ef594a3e1a26dcb8fc078c'],
+ 'payload': None,
+ 'nonce': 2305843009213869242}
+</code></pre>
+<ul>
+<li><code>Client.get_message_metadata</code> provides information how the given message fits to network structures such as <code>ledger_inclusion_state</code>, etc.</li>
+<li><code>Client.get_message_data</code> provides all data that relates to the given message and its payload(s)</li>
+</ul>
+<h3 id="indexationpayload"><a class="header" href="#indexationpayload">IndexationPayload</a></h3>
+<p><code>IndexationPayload</code> is a payload type that can be used to attach an arbitrary <code>data</code> and key <code>index</code> to a message. At least <code>index</code> should be provided in order to send the given payload. Data part (as <code>list[bytes]</code>) is optional one:</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+# encoding utf string into list of bytes
+some_utf_data = &quot;some utf based data&quot;.encode(&quot;utf8&quot;)
+
+message = client.message(
+    index=&quot;some_data_index&quot;, data=some_utf_data
+)
+print(message)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-json">{'message_id': '8d4fa37be3c00691131c2c3e03e7b8b956c9118a2ce4be3a8597d51d82ed2de9',
+ 'network_id': 7712883261355838377,
+ 'parents': ['3719d308ae14b7ef1ed5a3a1604228e97587b9da487db10bc6e4a4f800083da0',
+  '4431e2f776db888488728e0aa34c94975e65d6fa74893aa675172af6b9f37257',
+  '8f9fa84954c58bcfc9acc33ca827b4ea35c2caae88db736399a031120e85eebf',
+  'f63d416de97e6a9fd1314fbbbbb263f30dff260f3075f9a65e7dfe1f2cc56ce3'],
+ 'payload': {'transaction': None,
+  'milestone': None,
+  'indexation': [{'index': '736f6d655f646174615f696e646578',
+    'data': [115,
+     111,
+     109,
+     101,
+     32,
+     117,
+     116,
+     102,
+     32,
+     98,
+     97,
+     115,
+     101,
+     100,
+     32,
+     100,
+     97,
+     116,
+     97]}],
+  'receipt': None,
+  'treasury_transaction': None},
+ 'nonce': 6917529027641573188}
+</code></pre>
+<ul>
+<li>Feel free to check the given message using its <code>message_id</code> via <a href="https://explorer.iota.org/chrysalis/message/8d4fa37be3c00691131c2c3e03e7b8b956c9118a2ce4be3a8597d51d82ed2de9">Tangle explorer</a></li>
+<li>In comparison to an empty message sent in the previous chapter, the <code>payload</code> section looks more interesting</li>
+<li>There are three payloads prepared (<code>transaction</code>, <code>milestone</code> and <code>indexation</code>) however only <code>indexation</code> payload is leveraged this time</li>
+<li><code>index</code> was simply encoded to <code>list[bytes]</code> in hex (no hash algorithm) and the resulting string can be leveraged as an additional way how to search for a set of indexed messages with the same key index via <a href="https://explorer.iota.org/chrysalis/indexed/736f6d655f646174615f696e646578">Tangle explorer</a> or <code>Client.find_messages()</code> API call</li>
+<li><code>data</code> contains an arbitrary data encoded in bytes</li>
+<li>In comparison to IOTA 1.0, please note there is no IOTA address involved while sending data messages via network in case of IOTA 1.5. Such messages are referenced using <code>message_id</code> or key <code>index</code></li>
+<li>IOTA addresses are part of <code>UTXO</code> data structure that is sent using <code>SignedTransaction</code> payload explained below</li>
+</ul>
+<h3 id="signedtransaction"><a class="header" href="#signedtransaction">SignedTransaction</a></h3>
+<p><code>SignedTransaction</code> is a payload type that is used to transfer value-based messages as <code>UTXO</code> (Unspent Transaction Output).</p>
+<p>As mentioned above, this core payload changes the ledger state as old <code>outputs</code> are being spent (replaced) and new <code>outputs</code> are being created:</p>
+<pre><code class="language-python">import iota_client
+client = iota_client.Client()
+
+client.get_message_data(&quot;f51fb2839e0a24d5b4a97f1f5721fdac0f1eeafd77645968927f7c2f4b46565b&quot;)
+</code></pre>
+<p>Example of a message with <code>SignedTransaction</code> payload:</p>
+<pre><code class="language-json">{
+    'message_id': 'f51fb2839e0a24d5b4a97f1f5721fdac0f1eeafd77645968927f7c2f4b46565b',
+    'network_id': 7712883261355838377,
+    'parents': [
+        '4a84bf1d345a441cfdefd0e71d6efe820c1077e5dda9122a09cbf026132d208c',
+        '6e9153884fd1983be4c27c3ccdc69760b4775484eea498ec0707c2ff8901995e',
+        '7ac1407c88007a54d603400b558d5110f2bbf93a68100fb34f0b40cece9d0868',
+        '9ac0fd457998a1b3ddab9c0014f41344475358ad36c64a4b763de3b51f47c09a'
+    ],
+    'payload': {
+        'transaction': [
+            {
+                'essence': {
+                    'inputs': [
+                        {'transaction_id': '4a34274992474d91cf45366425ad1d4df6042cba64f3b6c07d297a2e6b7154a9', 'index': 0}
+                    ],
+                    'outputs': [
+                        {'address': 'atoi1qp9427varyc05py79ajku89xarfgkj74tpel5egr9y7xu3wpfc4lkpx0l86', 'amount': 10000000},
+                        {'address': 'atoi1qzdnav0zdgd4grn25cnwcuudtahvlhgh0r349ur749y9l03vadrfurhkxwj', 'amount': 100016136757200}
+                    ],
+                    'payload': {
+                        'transaction': None,
+                        'milestone': None,
+                        'indexation': [
+                            {'index': '54414e474c454b495420464155434554', 'data': []}
+                        ],
+                        'receipt': None,
+                        'treasury_transaction': None
+                    }
+                },
+                'unlock_blocks': [
+                    {
+                        'signature': {
+                            'public_key': [...],
+                            'signature': [...]
+                        },
+                        'reference': None
+                    }
+                ]
+            }
+        ],
+        'milestone': None,
+        'indexation': None,
+        'receipt': None,
+        'treasury_transaction': None
+    },
+    'nonce': 1146102
+}
+</code></pre>
+<p>Each <code>transaction</code> includes the following set of information:</p>
+<ul>
+<li><code>inputs</code>: list of valid <code>outputs</code> that should be used to fund the given message. Those <code>outputs</code> will be spent and once the message is confirmed, those outputs are not valid anymore. Outputs are uniquely referenced via <code>transaction_id</code> and inner <code>index</code>. At least one output has to be given with enough balance to source all <code>outputs</code> of the given message</li>
+<li><code>outputs</code>: list of IOTA address(es) and related amount(s) the input <code>outputs</code> should be split among. Based on this information, new <code>UTXO</code> entities (outputs) are being created</li>
+<li><code>unlock_blocks</code>: it includes a transaction signature(s) (currently based on <code>Ed25519</code> scheme) that proofs token ownership based on a valid seed. Needless to say, only valid seed owner is able to correctly sign the given transaction and proofs the ownership of tokens under the given output(s). Each input <code>output</code> has to have a corresponding <code>unblock_block</code> entry in case more <code>outputs</code> are used to fund the operation either using the given signature or as a reference to existing signature</li>
+<li><code>payload</code>: each <code>SignedTransaction</code> can include additional payload(s) such as <code>IndexationPayload</code>, etc. Meaning, any value-based messages can also contain arbitrary data and its key index. It is also an example how individual payloads can be encapsulated on different levels of concern</li>
+</ul>
+<p>Sending value-based messages is also very straightforward process.</p>
+<p>As a minimum, it needs a valid seed, output addresses and amount. The method finds valid output(s) that can be used to fund the given amount(s) and the unspent amount is sent to the same address:</p>
+<pre><code class="language-python">import os
+import iota_client
+
+# Get the seed from environment variable
+IOTA_SEED_SECRET = os.getenv('IOTA_SEED_SECRET')
+if not IOTA_SEED_SECRET:
+    raise Exception(&quot;Please define environment variable called `IOTA_SEED_SECRET`&quot;)
+
+client = iota_client.Client()
+
+message = client.message(
+    seed=IOTA_SEED_SECRET,
+    outputs=[
+        {
+            'address': 'atoi1qqydc70mpjdvl8l2wyseaseqwzhmedzzxrn4l9g2c8wdcsmhldz0ulwjxpz',
+            'amount': 1_000_000
+        }
+    ]
+)
+print(message)
+</code></pre>
+<p>Output example:</p>
+<pre><code class="language-json">{
+    'message_id': '7c47db1c4555348c260d91e90cc10fd66c2e73a84ec24bf9533e440f6d945d42',
+    'network_id': 7712883261355838377,
+    'parents': [
+        '0ec0cd3c0303845980981bf7cc72371a8cd6e38c15924a2950fb15c5ecf4a53b',
+        '4011f7724f96b6e39cdf9987ee650c0552d4fc63c09dd72b9be30a3cc7b53806',
+        '5730d5bd607c6125130df30204c995db5edcbd16c4ab150946dffac37ace26f9',
+        '8c1982682dbfa0abdd8772e38d044dbfcbea5ebb99bbe7174c07d81adda62419'
+    ],
+    'payload': {
+        'transaction': [
+            {
+                'essence': {
+                    'inputs': [
+                        {'transaction_id': 'a22cba0667c922cbb1f8bdcaf970b2a881ccd6e88e2fcce50374de2aac7c3772', 'index': 0}
+                    ],
+                    'outputs': [
+                        {'address': 'atoi1qqydc70mpjdvl8l2wyseaseqwzhmedzzxrn4l9g2c8wdcsmhldz0ulwjxpz', 'amount': 1000000},
+                        {'address': 'atoi1qp9427varyc05py79ajku89xarfgkj74tpel5egr9y7xu3wpfc4lkpx0l86', 'amount': 9000000}
+                    ],
+                    'payload': None
+                },
+                'unlock_blocks': [
+                    {'signature': {
+                        'public_key': [
+                        243,...&lt;trimmed&gt;
+                        ],
+                        'signature': [
+                                64,...&lt;trimmed&gt;
+                            ]
+                        },
+                        'reference': None
+                    }
+                ]
+            }
+        ],
+        'milestone': None,
+        'indexation': None,
+        'receipt': None,
+        'treasury_transaction': None
+    },
+    'nonce': 9223372036854802939
+}
+</code></pre>
+<blockquote>
+<p>We recommend to use official <code>wallet.rs</code> library together with <code>stronghold.rs</code> enclave for value-based transfers. This combination incorporates the best security practices while dealing with seeds, related addresses and <code>UTXO</code>. See more information on <a href="https://chrysalis.docs.iota.org/libraries/wallet.html">Chrysalis docs</a>.</p>
+</blockquote>
+<h4 id="dust-protection"><a class="header" href="#dust-protection">Dust protection</a></h4>
+<p>Please note, there is also implemented a <a href="https://chrysalis.docs.iota.org/guides/dev_guide.html#dust-protection">dust protection</a> mechanism in the network protocol to avoid malicious actors to spam network in order to decrease node performance while keeping track of unspent amount (<code>UTXO</code>):</p>
+<blockquote>
+<p>&quot;... microtransaction below 1Mi of IOTA tokens [can be sent] to another address if there is already at least 1Mi on that address&quot;
+That's why we did send 1Mi in the given example to comply with the protection.&quot;</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../../../../../libraries/client-lib/docs/libraries/python/getting_started.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../../../../../libraries/client-lib/docs/libraries/python/api_reference.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../../../../../libraries/client-lib/docs/libraries/python/getting_started.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../../../../../libraries/client-lib/docs/libraries/python/api_reference.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../../../../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../../../../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../../../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+        <script type="text/javascript" src="../../../../.././theme/custom/sidebar.js"></script>
+        
+
+        
+
+    </body>
+</html>
