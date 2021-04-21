@@ -4,16 +4,17 @@ language = "en"
 multilingual = false
 src = ""
 title = "IOTA Documentation"
-theme= "./theme"
 
 [preprocessor.open-on-gh]
 command = "mdbook-open-on-gh"
 renderer = ["html"]
 
 [output.html]
-git-repository-url = "https://github.com/mozilla/glean"
+git-repository-url = "https://github.com/huhn511/git-submodules-mdbook"
 additional-css = ["open-in.css", "./theme/custom/sidebar.css"]
 additional-js = ["./theme/custom/sidebar.js"]
+theme= "./theme"
+default-theme = "iota"
 
 cname = "docs.einfachiota.de"
 
