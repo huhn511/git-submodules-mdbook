@@ -13,3 +13,15 @@
 [submodule "networks/chrysalis-docs"]
 	path = networks/chrysalis-docs
 	url = https://github.com/iotaledger/chrysalis-docs
+[submodule "libraries/wallet-lib"]
+	path = libraries/wallet-lib
+	url = https://github.com/iotaledger/wallet.rs
+[submodule "node-software/goshimmer"]
+	path = node-software/goshimmer
+	url = https://github.com/iotaledger/goshimmer
+[submodule "node-software/wasp"]
+	path = node-software/wasp
+	url = https://github.com/iotaledger/wasp
+[submodule "products/stronghold"]
+	path = products/stronghold
+	url = https://github.com/iotaledger/stronghold.rs

@@ -1,0 +1,16 @@
+.git
+.gitignore
+.github/
+docs/
+.idea/
+
+LICENSE
+README.md
+CHANGELOG.md
+docker-compose.yml
+
+images/
+tools/
+
+# Database directory
+mainnetdb/
