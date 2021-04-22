@@ -8,7 +8,6 @@ import (
 	"github.com/iotaledger/wasp/client/chainclient"
 	"github.com/iotaledger/wasp/contracts/native/inccounter"
 	"github.com/iotaledger/wasp/packages/coretypes"
-	"github.com/iotaledger/wasp/packages/kv"
 	"github.com/iotaledger/wasp/packages/kv/codec"
 	"github.com/iotaledger/wasp/packages/kv/collections"
 	"github.com/iotaledger/wasp/packages/kv/dict"
@@ -21,12 +20,9 @@ func TestDeployChain(t *testing.T) {
 	setup(t, "test_cluster")
 
 	counter, err := clu.StartMessageCounter(map[string]int{
-		"chainrec":            2,
-		"active_committee":    1,
-		"dismissed_committee": 0,
-		"state":               2,
-		"request_in":          1,
-		"request_out":         2,
+		"dismissed_chain": 0,
+		"state":           2,
+		"request_out":     2,
 	})
 	check(err, t)
 	defer counter.Close()
@@ -39,7 +35,7 @@ func TestDeployChain(t *testing.T) {
 	}
 	chainID, chainOwnerID := getChainInfo(t, chain)
 	require.Equal(t, chainID, chain.ChainID)
-	require.Equal(t, chainOwnerID, coretypes.NewAgentIDFromAddress(*chain.OriginatorAddress()))
+	require.Equal(t, chainOwnerID, *coretypes.NewAgentID(chain.OriginatorAddress(), 0))
 	t.Logf("--- chainID: %s", chainID.String())
 	t.Logf("--- chainOwnerID: %s", chainOwnerID.String())
 
@@ -57,11 +53,8 @@ func TestDeployContractOnly(t *testing.T) {
 	setup(t, "test_cluster")
 
 	counter, err := clu.StartMessageCounter(map[string]int{
-		"chainrec":            2,
-		"active_committee":    1,
 		"dismissed_committee": 0,
 		"state":               2,
-		"request_in":          1,
 		"request_out":         2,
 	})
 	check(err, t)
@@ -112,12 +105,10 @@ func TestDeployContractOnly(t *testing.T) {
 
 	// test calling root.FuncFindContractByName view function using client
 	ret, err := chain.Cluster.WaspClient(0).CallView(
-		chain.ContractID(root.Interface.Hname()),
-		root.FuncFindContract,
-		dict.FromGoMap(map[kv.Key][]byte{
+		chain.ChainID, root.Interface.Hname(), root.FuncFindContract,
+		dict.Dict{
 			root.ParamHname: hname.Bytes(),
-		}),
-	)
+		})
 	check(err, t)
 	recb, err := ret.Get(root.ParamData)
 	check(err, t)
@@ -130,11 +121,8 @@ func TestDeployContractAndSpawn(t *testing.T) {
 	setup(t, "test_cluster")
 
 	counter, err := clu.StartMessageCounter(map[string]int{
-		"chainrec":            2,
-		"active_committee":    1,
 		"dismissed_committee": 0,
 		"state":               2,
-		"request_in":          1,
 		"request_out":         2,
 	})
 	check(err, t)
@@ -194,7 +182,7 @@ func TestDeployContractAndSpawn(t *testing.T) {
 	})
 	check(err, t)
 
-	err = chain.CommitteeMultiClient().WaitUntilAllRequestsProcessed(tx, 30*time.Second)
+	err = chain.CommitteeMultiClient().WaitUntilAllRequestsProcessed(chain.ChainID, tx, 30*time.Second)
 	check(err, t)
 
 	chain.WithSCState(root.Interface.Hname(), func(host string, blockIndex uint32, state dict.Dict) bool {

@@ -4,45 +4,28 @@
 package statemgr
 
 import (
+	"github.com/iotaledger/goshimmer/packages/ledgerstate"
 	"github.com/iotaledger/wasp/packages/chain"
+	"github.com/iotaledger/wasp/packages/coretypes"
+	"github.com/iotaledger/wasp/packages/hashing"
 	"github.com/iotaledger/wasp/packages/state"
 	"github.com/iotaledger/wasp/packages/util"
+	"time"
 )
-
-// EventPingPongMsg reacts to the PinPong message
-func (sm *stateManager) EventStateIndexPingPongMsg(msg *chain.StateIndexPingPongMsg) {
-	sm.eventStateIndexPingPongMsgCh <- msg
-}
-func (sm *stateManager) eventStateIndexPingPongMsg(msg *chain.StateIndexPingPongMsg) {
-	before := sm.numPongsHasQuorum()
-	sm.pingPongReceived(msg.SenderIndex)
-	after := sm.numPongsHasQuorum()
-
-	if msg.RSVP && sm.solidStateValid {
-		// only respond if current solid state is validated
-		sm.respondPongToPeer(msg.SenderIndex)
-	}
-	if !before && after {
-		sm.log.Infof("collected %d evidences of state indices of peers", sm.numPongs())
-	}
-	//sm.log.Debugw("EventStateIndexPingPongMsg",
-	//	"sender", msg.SenderIndex,
-	//	"state", msg.BlockIndex,
-	//	"rsvp", msg.RSVP,
-	//	"numPongs", sm.numPongs(),
-	//)
-}
 
 // EventGetBlockMsg is a request for a block while syncing
 func (sm *stateManager) EventGetBlockMsg(msg *chain.GetBlockMsg) {
 	sm.eventGetBlockMsgCh <- msg
 }
 func (sm *stateManager) eventGetBlockMsg(msg *chain.GetBlockMsg) {
+	if sm.stateOutput == nil || sm.solidState == nil {
+		return
+	}
 	sm.log.Debugw("EventGetBlockMsg",
 		"sender index", msg.SenderIndex,
 		"block index", msg.BlockIndex,
 	)
-	block, err := state.LoadBlock(sm.chain.ID(), msg.BlockIndex)
+	block, err := state.LoadBlock(sm.dbp.GetPartition(sm.chain.ID()), msg.BlockIndex)
 	if err != nil || block == nil {
 		// can't load block, can't respond
 		return
@@ -50,177 +33,92 @@ func (sm *stateManager) eventGetBlockMsg(msg *chain.GetBlockMsg) {
 
 	sm.log.Debugf("EventGetBlockMsg for state index #%d --> peer %d", msg.BlockIndex, msg.SenderIndex)
 
-	err = sm.chain.SendMsg(msg.SenderIndex, chain.MsgBatchHeader, util.MustBytes(&chain.BlockHeaderMsg{
-		PeerMsgHeader: chain.PeerMsgHeader{
-			BlockIndex: msg.BlockIndex,
-		},
-		Size:                block.Size(),
-		AnchorTransactionID: block.StateTransactionID(),
+	err = sm.peers.SendMsg(msg.SenderIndex, chain.MsgBlock, util.MustBytes(&chain.BlockMsg{
+		Block: block,
 	}))
 	if err != nil {
 		return
 	}
-	block.ForEach(func(batchIndex uint16, stateUpdate state.StateUpdate) bool {
-		err = sm.chain.SendMsg(msg.SenderIndex, chain.MsgStateUpdate, util.MustBytes(&chain.StateUpdateMsg{
-			PeerMsgHeader: chain.PeerMsgHeader{
-				BlockIndex: msg.BlockIndex,
-			},
-			StateUpdate:     stateUpdate,
-			IndexInTheBlock: batchIndex,
-		}))
-		sh := util.GetHashValue(stateUpdate)
-		sm.log.Debugw("EventGetBlockMsg: sending stateUpdate", "hash", sh.String())
-		return true
-	})
 }
 
-// EventBlockHeaderMsg
-func (sm *stateManager) EventBlockHeaderMsg(msg *chain.BlockHeaderMsg) {
-	sm.eventBlockHeaderMsgCh <- msg
+// EventBlockMsg
+func (sm *stateManager) EventBlockMsg(msg *chain.BlockMsg) {
+	sm.eventBlockMsgCh <- msg
 }
-func (sm *stateManager) eventBlockHeaderMsg(msg *chain.BlockHeaderMsg) {
-	sm.log.Debugw("EventBlockHeaderMsg",
+func (sm *stateManager) eventBlockMsg(msg *chain.BlockMsg) {
+	if sm.stateOutput == nil {
+		return
+	}
+	sm.log.Debugw("EventBlockMsg",
 		"sender", msg.SenderIndex,
-		"state index", msg.BlockIndex,
-		"size", msg.Size,
-		"state tx", msg.AnchorTransactionID.String(),
+		"block index", msg.Block.StateIndex(),
+		"essence hash", msg.Block.EssenceHash().String(),
+		"approving output", coretypes.OID(msg.Block.ApprovingOutputID()),
 	)
-	if sm.syncedBatch != nil &&
-		sm.syncedBatch.stateIndex == msg.BlockIndex &&
-		sm.syncedBatch.stateTxId == msg.AnchorTransactionID &&
-		len(sm.syncedBatch.stateUpdates) == int(msg.Size) {
-		return // no need to start from scratch
-	}
-	sm.syncedBatch = &syncedBatch{
-		stateIndex:   msg.BlockIndex,
-		stateUpdates: make([]state.StateUpdate, msg.Size),
-		stateTxId:    msg.AnchorTransactionID,
-	}
-}
-
-// response to the state update msg.
-// It collects state updates while waiting for the anchoring state transaction
-func (sm *stateManager) EventStateUpdateMsg(msg *chain.StateUpdateMsg) {
-	sm.eventStateUpdateMsgCh <- msg
-}
-func (sm *stateManager) eventStateUpdateMsg(msg *chain.StateUpdateMsg) {
-	sm.log.Debugw("EventStateUpdateMsg",
-		"sender", msg.SenderIndex,
-		"state index", msg.BlockIndex,
-		"block index", msg.IndexInTheBlock,
-	)
-	if sm.syncedBatch == nil {
-		return
-	}
-	if sm.syncedBatch.stateIndex != msg.BlockIndex {
-		return
-	}
-	if int(msg.IndexInTheBlock) >= len(sm.syncedBatch.stateUpdates) {
-		sm.log.Errorf("bad block index in the state update message")
-		return
-	}
-	sh := util.GetHashValue(msg.StateUpdate)
-	sm.log.Debugf("EventStateUpdateMsg: receiving stateUpdate block index: %d hash: %s",
-		msg.IndexInTheBlock, sh.String())
-
-	sm.syncedBatch.stateUpdates[msg.IndexInTheBlock] = msg.StateUpdate
-	sm.syncedBatch.msgCounter++
-
-	if int(sm.syncedBatch.msgCounter) < len(sm.syncedBatch.stateUpdates) {
-		// some are missing
-		return
-	}
-	// check if whole block already received
-	for _, su := range sm.syncedBatch.stateUpdates {
-		if su == nil {
-			// some state updates are missing
-			return
-		}
-	}
-	// the whole block received
-	batch, err := state.NewBlock(sm.syncedBatch.stateUpdates)
-	if err != nil {
-		sm.log.Errorf("failed to create block: %v", err)
-		sm.syncedBatch = nil
-		return
-	}
-	batch.WithBlockIndex(sm.syncedBatch.stateIndex).WithStateTransaction(sm.syncedBatch.stateTxId)
-
-	sm.log.Debugf("EventStateUpdateMsg: reconstructed block %s", batch.String())
-
-	sm.syncedBatch = nil
-	go sm.chain.ReceiveMessage(chain.PendingBlockMsg{
-		Block: batch,
-	})
+	sm.blockArrived(msg.Block)
 	sm.takeAction()
+}
+
+func (sm *stateManager) EventOutputMsg(msg ledgerstate.Output) {
+	sm.eventOutputMsgCh <- msg
+}
+func (sm *stateManager) eventOutputMsg(msg ledgerstate.Output) {
+	sm.log.Debugf("EventOutputMsg: %s", coretypes.OID(msg.ID()))
+	chainOutput, ok := msg.(*ledgerstate.AliasOutput)
+	if !ok {
+		return
+	}
+	sm.chainOutputArrived(chainOutput)
 }
 
 // EventStateTransactionMsg triggered whenever new state transaction arrives
 // the state transaction may be confirmed or not
-func (sm *stateManager) EventStateTransactionMsg(msg *chain.StateTransactionMsg) {
-	sm.eventStateTransactionMsgCh <- msg
+func (sm *stateManager) EventStateMsg(msg *chain.StateMsg) {
+	sm.eventStateOutputMsgCh <- msg
 }
-func (sm *stateManager) eventStateTransactionMsg(msg *chain.StateTransactionMsg) {
-	stateBlock, ok := msg.Transaction.State()
-	if !ok {
-		// should not happen: must have state block
+func (sm *stateManager) eventStateMsg(msg *chain.StateMsg) {
+	stateHash, err := hashing.HashValueFromBytes(msg.ChainOutput.GetStateData())
+	if err != nil {
+		sm.log.Errorf("EventStateMsg: failed to parse state hash: %v", err)
 		return
 	}
-
-	vh := stateBlock.StateHash()
-	sm.log.Debugw("EventStateTransactionMsg",
-		"txid", msg.ID().String(),
-		"state index", stateBlock.BlockIndex(),
-		"state hash", vh.String(),
+	sm.log.Debugw("EventStateMsg",
+		"state index", msg.ChainOutput.GetStateIndex(),
+		"chainOutput", coretypes.OID(msg.ChainOutput.ID()),
+		"state hash", stateHash.String(),
 	)
-
-	//prop, err := msg.Transaction.Properties()
-	//if err != nil{
-	//	sm.log.Errorf("EventStateTransactionMsg: %v", err)
-	//	return
-	//}
-	//sm.log.Debugf("EventStateTransactionMsg:\n%s", prop.String())
-
-	sm.evidenceStateIndex(stateBlock.BlockIndex())
-
-	if sm.solidStateValid {
-		if stateBlock.BlockIndex() != sm.solidState.BlockIndex()+1 {
-			sm.log.Debugf("skip state transaction: expected with state index #%d, got #%d, Txid: %s",
-				sm.solidState.BlockIndex()+1, stateBlock.BlockIndex(), msg.ID().String())
+	if sm.stateOutput != nil {
+		switch {
+		case sm.stateOutput.GetStateIndex() == msg.ChainOutput.GetStateIndex():
+			sm.log.Debug("EventStateMsg: repeated state output")
+			return
+		case sm.stateOutput.GetStateIndex() > msg.ChainOutput.GetStateIndex():
+			sm.log.Warn("EventStateMsg: out of order state output")
 			return
 		}
-	} else {
-		if sm.solidState == nil {
-			// pre-origin
-			if stateBlock.BlockIndex() != 0 {
-				sm.log.Debugf("sm.solidState == nil && stateBlock.BlockIndex() != 0")
-				return
-			}
-		} else {
-			if stateBlock.BlockIndex() != sm.solidState.BlockIndex() {
-				sm.log.Debugf("sm.solidState == nil && stateBlock.BlockIndex() != sm.solidState.BlockIndex()")
-				return
-			}
-		}
 	}
-	sm.nextStateTransaction = msg.Transaction
-
+	sm.stateOutput = msg.ChainOutput
+	sm.stateOutputTimestamp = msg.Timestamp
+	sm.pullStateDeadline = time.Now()
 	sm.takeAction()
 }
 
-func (sm *stateManager) EventPendingBlockMsg(msg chain.PendingBlockMsg) {
+func (sm *stateManager) EventBlockCandidateMsg(msg chain.BlockCandidateMsg) {
 	sm.eventPendingBlockMsgCh <- msg
 }
-func (sm *stateManager) eventPendingBlockMsg(msg chain.PendingBlockMsg) {
-	sm.log.Debugw("EventPendingBlockMsg",
+func (sm *stateManager) eventBlockCandidateMsg(msg chain.BlockCandidateMsg) {
+	if sm.stateOutput == nil {
+		return
+	}
+	sm.log.Debugw("EventBlockCandidateMsg",
 		"state index", msg.Block.StateIndex(),
 		"size", msg.Block.Size(),
-		"txid", msg.Block.StateTransactionID().String(),
+		"state output", coretypes.OID(msg.Block.ApprovingOutputID()),
 		"block essence", msg.Block.EssenceHash().String(),
 		"ts", msg.Block.Timestamp(),
 	)
-
-	sm.addPendingBlock(msg.Block)
+	sm.addBlockCandidate(msg.Block)
+	//sm.checkStateApproval()
 	sm.takeAction()
 }
 

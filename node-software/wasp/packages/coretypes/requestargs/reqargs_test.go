@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/iotaledger/wasp/packages/dbprovider"
+	"github.com/iotaledger/wasp/packages/downloader"
 	"github.com/iotaledger/wasp/packages/hashing"
 	"github.com/iotaledger/wasp/packages/kv"
 	"github.com/iotaledger/wasp/packages/kv/kvdecoder"
 	"github.com/iotaledger/wasp/packages/registry"
-	"github.com/iotaledger/wasp/packages/testutil"
+	"github.com/iotaledger/wasp/packages/testutil/testlogger"
 	"github.com/iotaledger/wasp/packages/util"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -80,7 +81,7 @@ func TestRequestArguments3(t *testing.T) {
 	require.EqualValues(t, r["-arg2"], "data2")
 	require.EqualValues(t, r["-arg3"], "data3")
 
-	log := testutil.NewLogger(t)
+	log := testlogger.NewLogger(t)
 	db := dbprovider.NewInMemoryDBProvider(log)
 	reg := registry.NewRegistry(nil, log, db)
 
@@ -116,11 +117,11 @@ func TestRequestArguments4(t *testing.T) {
 	require.EqualValues(t, r["-arg3"], "data3")
 	require.EqualValues(t, r["*arg4"], h[:])
 
-	log := testutil.NewLogger(t)
+	log := testlogger.NewLogger(t)
 	db := dbprovider.NewInMemoryDBProvider(log)
 	reg := registry.NewRegistry(nil, log, db)
 
-	_, ok, err := r.SolidifyRequestArguments(reg)
+	_, ok, err := r.SolidifyRequestArguments(reg, downloader.New(log, "http://some.fake.address.lt"))
 	require.NoError(t, err)
 	require.False(t, ok)
 }
@@ -140,7 +141,7 @@ func TestRequestArguments5(t *testing.T) {
 	require.EqualValues(t, r["-arg3"], "data3")
 	require.EqualValues(t, r["*arg4"], h[:])
 
-	log := testutil.NewLogger(t)
+	log := testlogger.NewLogger(t)
 	db := dbprovider.NewInMemoryDBProvider(log)
 	reg := registry.NewRegistry(nil, log, db)
 

@@ -3,7 +3,7 @@ package state
 import (
 	"io"
 
-	valuetransaction "github.com/iotaledger/goshimmer/dapps/valuetransfers/packages/transaction"
+	"github.com/iotaledger/goshimmer/packages/ledgerstate"
 	"github.com/iotaledger/wasp/packages/coretypes"
 	"github.com/iotaledger/wasp/packages/hashing"
 	"github.com/iotaledger/wasp/packages/kv/buffered"
@@ -22,7 +22,7 @@ type VirtualState interface {
 	// applies block of state updates, state index and timestamp
 	ApplyBlock(Block) error
 	// commit means saving virtual state to sc db, making it persistent (solid)
-	CommitToDb(batch Block) error
+	CommitToDb(block Block) error
 	// return hash of the variable state. It is a root of the Merkle chain of all
 	// state updates starting from the origin
 	Hash() hashing.HashValue
@@ -39,12 +39,12 @@ type VirtualState interface {
 // ResultBlock is completed when it contains one state update for each index
 type StateUpdate interface {
 	// request which resulted in this state update
-	RequestID() *coretypes.RequestID
+	RequestID() coretypes.RequestID
 	Timestamp() int64
 	WithTimestamp(int64) StateUpdate
 	// the payload of variables/values
 	String() string
-	Mutations() buffered.MutationSequence
+	Mutations() *buffered.Mutations
 	Clone() StateUpdate
 	Write(io.Writer) error
 	Read(io.Reader) error
@@ -55,13 +55,15 @@ type Block interface {
 	ForEach(func(uint16, StateUpdate) bool)
 	StateIndex() uint32
 	WithBlockIndex(uint32) Block
-	StateTransactionID() valuetransaction.ID
-	WithStateTransaction(valuetransaction.ID) Block
+	ApprovingOutputID() ledgerstate.OutputID
+	WithApprovingOutputID(ledgerstate.OutputID) Block
 	Timestamp() int64
 	Size() uint16
-	RequestIDs() []*coretypes.RequestID
+	RequestIDs() []coretypes.RequestID
 	EssenceHash() hashing.HashValue // except state transaction id
+	IsApprovedBy(*ledgerstate.AliasOutput) bool
 	String() string
+	Bytes() []byte
 	Write(io.Writer) error
 	Read(io.Reader) error
 }

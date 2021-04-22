@@ -5,26 +5,30 @@ package wasmhost
 
 import (
 	"github.com/iotaledger/hive.go/logger"
+	"github.com/iotaledger/wasp/packages/kv/codec"
 	"github.com/mr-tron/base58"
 )
 
+// all type id values should exactly match their counterpart values on the client!
 const (
 	OBJTYPE_ARRAY int32 = 0x20
 
-	OBJTYPE_ADDRESS     int32 = 1
-	OBJTYPE_AGENT_ID    int32 = 2
-	OBJTYPE_BYTES       int32 = 3
-	OBJTYPE_CHAIN_ID    int32 = 4
-	OBJTYPE_COLOR       int32 = 5
-	OBJTYPE_CONTRACT_ID int32 = 6
-	OBJTYPE_HASH        int32 = 7
-	OBJTYPE_HNAME       int32 = 8
-	OBJTYPE_INT64       int32 = 9
-	OBJTYPE_MAP         int32 = 10
-	OBJTYPE_REQUEST_ID  int32 = 11
-	OBJTYPE_STRING      int32 = 12
+	OBJTYPE_ADDRESS    int32 = 1
+	OBJTYPE_AGENT_ID   int32 = 2
+	OBJTYPE_BYTES      int32 = 3
+	OBJTYPE_CHAIN_ID   int32 = 4
+	OBJTYPE_COLOR      int32 = 5
+	OBJTYPE_HASH       int32 = 6
+	OBJTYPE_HNAME      int32 = 7
+	OBJTYPE_INT64      int32 = 8
+	OBJTYPE_MAP        int32 = 9
+	OBJTYPE_REQUEST_ID int32 = 10
+	OBJTYPE_STRING     int32 = 11
 )
 
+// flag to indicate that this key id originally comes from a string key
+// note that this includes the predefined key ids as they are all negative
+// this allows us to display better readable tracing information
 const KeyFromString int32 = 0x4000
 
 var HostTracing = false
@@ -39,8 +43,8 @@ type HostObject interface {
 }
 
 // KvStoreHost implements WaspLib.client.ScHost interface
-// it allows wasplib/govm to bypass Wasm and access the sandbox
-// directly so that it is possible to debug into SC code
+// it allows WasmGoVM to bypass Wasm and access the sandbox directly
+// so that it is possible to debug into SC code that was written in Go
 type KvStoreHost struct {
 	keyIdToKey    [][]byte
 	keyIdToKeyMap [][]byte
@@ -90,7 +94,15 @@ func (host *KvStoreHost) GetBytes(objId int32, keyId int32, typeId int32) []byte
 		return nil
 	}
 	bytes := obj.GetBytes(keyId, typeId)
-	host.Trace("GetBytes o%d k%d = '%s'", objId, keyId, base58.Encode(bytes))
+	switch typeId {
+	case OBJTYPE_INT64:
+		val, _, _ := codec.DecodeInt64(bytes)
+		host.Trace("GetBytes o%d k%d = %d", objId, keyId, val)
+	case OBJTYPE_STRING:
+		host.Trace("GetBytes o%d k%d = '%s'", objId, keyId, string(bytes))
+	default:
+		host.Trace("GetBytes o%d k%d = '%s'", objId, keyId, base58.Encode(bytes))
+	}
 	return bytes
 }
 
@@ -191,7 +203,15 @@ func (host *KvStoreHost) PushFrame() []HostObject {
 
 func (host *KvStoreHost) SetBytes(objId int32, keyId int32, typeId int32, bytes []byte) {
 	host.FindObject(objId).SetBytes(keyId, typeId, bytes)
-	host.Trace("SetBytes o%d k%d v='%s'", objId, keyId, base58.Encode(bytes))
+	switch typeId {
+	case OBJTYPE_INT64:
+		val, _, _ := codec.DecodeInt64(bytes)
+		host.Trace("SetBytes o%d k%d v=%d", objId, keyId, val)
+	case OBJTYPE_STRING:
+		host.Trace("SetBytes o%d k%d v='%s'", objId, keyId, string(bytes))
+	default:
+		host.Trace("SetBytes o%d k%d v='%s'", objId, keyId, base58.Encode(bytes))
+	}
 }
 
 func (host *KvStoreHost) Trace(format string, a ...interface{}) {

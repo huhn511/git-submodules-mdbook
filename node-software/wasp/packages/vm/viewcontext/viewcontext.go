@@ -2,12 +2,13 @@ package viewcontext
 
 import (
 	"fmt"
-	"github.com/iotaledger/hive.go/logger"
-	"github.com/iotaledger/wasp/packages/kv/buffered"
 
+	"github.com/iotaledger/hive.go/logger"
 	"github.com/iotaledger/wasp/packages/coretypes"
+	"github.com/iotaledger/wasp/packages/dbprovider"
 	"github.com/iotaledger/wasp/packages/hashing"
 	"github.com/iotaledger/wasp/packages/kv"
+	"github.com/iotaledger/wasp/packages/kv/buffered"
 	"github.com/iotaledger/wasp/packages/kv/dict"
 	"github.com/iotaledger/wasp/packages/kv/subrealm"
 	"github.com/iotaledger/wasp/packages/state"
@@ -18,15 +19,14 @@ import (
 
 type viewcontext struct {
 	processors *processors.ProcessorCache
-	state      kv.KVStore //buffered.BufferedKVStore
+	state      kv.KVStore // buffered.BufferedKVStore
 	chainID    coretypes.ChainID
 	timestamp  int64
 	log        *logger.Logger
 }
 
-func NewFromDB(chainID coretypes.ChainID, proc *processors.ProcessorCache) (*viewcontext, error) {
-	state_, _, ok, err := state.LoadSolidState(&chainID)
-
+func NewFromDB(dbp *dbprovider.DBProvider, chainID coretypes.ChainID, proc *processors.ProcessorCache) (*viewcontext, error) {
+	state_, _, ok, err := state.LoadSolidState(dbp, &chainID)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (v *viewcontext) mustCallView(contractHname coretypes.Hname, epCode coretyp
 	if !ep.IsView() {
 		return nil, fmt.Errorf("only view entry point can be called in this context")
 	}
-	return ep.CallView(newSandboxView(v, contractHname, params))
+	return ep.Call(newSandboxView(v, contractHname, params))
 }
 
 func contractStateSubpartition(state kv.KVStore, contractHname coretypes.Hname) kv.KVStore {

@@ -28,7 +28,7 @@ func addStateQueryEndpoint(server echoswagger.ApiRouter) {
 }
 
 func handleStateQuery(c echo.Context) error {
-	chainID, err := coretypes.NewChainIDFromBase58(c.Param("chainID"))
+	chainID, err := coretypes.ChainIDFromBase58(c.Param("chainID"))
 	if err != nil {
 		return httperrors.BadRequest(fmt.Sprintf("Invalid chain ID: %+v", c.Param("chainID")))
 	}
@@ -46,7 +46,7 @@ func handleStateQuery(c echo.Context) error {
 	if !exist {
 		return httperrors.NotFound(fmt.Sprintf("State not found with address %s", chainID.String()))
 	}
-	txid := batch.StateTransactionID()
+	txid := batch.ApprovingOutputID()
 	ret := &statequery.Results{
 		KeyQueryResults: make([]*statequery.QueryResult, len(req.KeyQueries)),
 
@@ -54,7 +54,7 @@ func handleStateQuery(c echo.Context) error {
 		Timestamp:  time.Unix(0, state.Timestamp()),
 		StateHash:  state.Hash(),
 		StateTxId:  model.NewValueTxID(&txid),
-		Requests:   make([]*coretypes.RequestID, len(batch.RequestIDs())),
+		Requests:   make([]coretypes.RequestID, len(batch.RequestIDs())),
 	}
 	copy(ret.Requests, batch.RequestIDs())
 	vars := state.Variables()

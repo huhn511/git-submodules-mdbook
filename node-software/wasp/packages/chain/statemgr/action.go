@@ -4,375 +4,130 @@
 package statemgr
 
 import (
-	"fmt"
-	"strconv"
+	"github.com/iotaledger/wasp/packages/chain"
 	"time"
 
-	valuetransaction "github.com/iotaledger/goshimmer/dapps/valuetransfers/packages/transaction"
-	"github.com/iotaledger/wasp/packages/chain"
+	"github.com/iotaledger/wasp/packages/coretypes"
+
 	"github.com/iotaledger/wasp/packages/hashing"
-	"github.com/iotaledger/wasp/packages/publisher"
 	"github.com/iotaledger/wasp/packages/state"
-	"github.com/iotaledger/wasp/packages/util"
-	"github.com/iotaledger/wasp/plugins/nodeconn"
 )
 
 func (sm *stateManager) takeAction() {
-	sm.sendPingsIfNeeded()
-	sm.notifyConsensusOnStateTransitionIfNeeded()
-	if sm.checkStateApproval() {
+	if !sm.ready.IsReady() {
 		return
 	}
-	sm.requestStateTransactionIfNeeded()
-	sm.requestStateUpdateFromPeerIfNeeded()
+	sm.checkStateApproval()
+	sm.pullStateIfNeeded()
+	sm.doSyncActionIfNeeded()
+	sm.storeSyncingData()
 }
 
-func (sm *stateManager) notifyConsensusOnStateTransitionIfNeeded() {
-	if !sm.solidStateValid {
+func (sm *stateManager) pullStateIfNeeded() {
+	nowis := time.Now()
+	if sm.pullStateDeadline.After(nowis) {
 		return
 	}
-	if sm.consensusNotifiedOnStateTransition {
-		return
+	if sm.stateOutput == nil || len(sm.blockCandidates) > 0 {
+		sm.log.Debugf("pull state")
+		sm.nodeConn.PullState(sm.chain.ID().AsAliasAddress())
 	}
-	if !sm.numPongsHasQuorum() {
-		return
-	}
-
-	sm.consensusNotifiedOnStateTransition = true
-	go sm.chain.ReceiveMessage(&chain.StateTransitionMsg{
-		VariableState:     sm.solidState.Clone(),
-		AnchorTransaction: sm.approvingTransaction,
-		Synchronized:      sm.isSynchronized(),
-	})
+	sm.pullStateDeadline = nowis.Add(pullStatePeriod)
 }
 
-// sendPingsIfNeeded sends pings to the committee peers to gather evidence about the largest
-// state index. It doesn't send it if evidence is already here.
-// To force sending pings all 'false' must be set in sm.pingPong
-func (sm *stateManager) sendPingsIfNeeded() {
-	if sm.numPongsHasQuorum() {
-		// no need for pinging, all state information is gathered already
+func (sm *stateManager) checkStateApproval() {
+	if sm.stateOutput == nil {
 		return
 	}
-	if !sm.chain.HasQuorum() {
-		// doesn't make sense the pinging, alive nodes does not make quorum
-		return
+	// among candidate state update batches we locate the one which
+	// is approved by the state output
+	varStateHash, err := hashing.HashValueFromBytes(sm.stateOutput.GetStateData())
+	if err != nil {
+		sm.log.Panic(err)
 	}
-	if !sm.solidStateValid {
-		// own solid state has not been validated yet
-		return
-	}
-	if sm.deadlineForPongQuorum.After(time.Now()) {
-		// not time yet
-		return
-	}
-	sm.sendPingsToCommitteePeers()
-}
-
-// checks the state of the state manager. If one of pending blocks is confirmed
-// by the nextStateTransaction changes the state to the next
-func (sm *stateManager) checkStateApproval() bool {
-	if sm.nextStateTransaction == nil {
-		return false
-	}
-	// among pending state update batches we locate the one which
-	// is approved by the transaction
-	varStateHash := sm.nextStateTransaction.MustState().StateHash()
-	pending, ok := sm.pendingBlocks[varStateHash]
+	candidate, ok := sm.blockCandidates[varStateHash]
 	if !ok {
-		// corresponding block wasn't found among pending state updates
+		// corresponding block wasn't found among candidate state updates
 		// transaction doesn't approve anything
-		return false
-	}
-
-	// found a pending block which is approved by the nextStateTransaction
-
-	if pending.block.StateTransactionID() == niltxid {
-		// not committed yet block. Link it to the transaction
-		pending.block.WithStateTransaction(sm.nextStateTransaction.ID())
-	} else {
-		txid1 := pending.block.StateTransactionID()
-		txid2 := sm.nextStateTransaction.ID()
-		if txid1 != txid2 {
-			sm.log.Errorf("major inconsistency: var state hash %s is approved by two different tx: txid1 = %s, txid2 = %s",
-				varStateHash.String(), txid1.String(), txid2.String())
-			return false
-		}
-	}
-
-	if sm.solidStateValid || sm.solidState == nil {
-		if sm.solidState == nil {
-			// pre-origin
-			if sm.nextStateTransaction.ID() != (valuetransaction.ID)(*sm.chain.Color()) {
-				sm.log.Errorf("major inconsistency: origin transaction hash %s not equal to the color of the SC %s",
-					sm.nextStateTransaction.ID().String(), sm.chain.Color().String())
-				sm.chain.Dismiss()
-				return false
-			}
-		}
-		if err := pending.nextState.CommitToDb(pending.block); err != nil {
-			sm.log.Errorw("failed to save state at index #%d", pending.nextState.BlockIndex())
-			return false
-		}
-
-		if sm.solidState != nil {
-			sm.log.Infof("STATE TRANSITION TO #%d. Anchor transaction: %s, block size: %d",
-				pending.nextState.BlockIndex(), sm.nextStateTransaction.ID().String(), pending.block.Size())
-			sm.log.Debugf("STATE TRANSITION. State hash: %s, block essence: %s",
-				varStateHash.String(), pending.block.EssenceHash().String())
-		} else {
-			sm.log.Infof("ORIGIN STATE SAVED. Origin transaction: %s",
-				sm.nextStateTransaction.ID().String())
-			sm.log.Debugf("ORIGIN STATE SAVED. State hash: %s, state txid: %s, block essence: %s",
-				varStateHash.String(), sm.nextStateTransaction.ID().String(), pending.block.EssenceHash().String())
-		}
-
-	} else {
-		// !sm.solidStateValid && sm.solidState != nil --> initial load
-
-		sm.log.Infof("INITIAL STATE #%d LOADED FROM DB. State hash: %s, state txid: %s",
-			sm.solidState.BlockIndex(), varStateHash.String(), sm.nextStateTransaction.ID().String())
-	}
-	sm.solidStateValid = true
-	sm.solidState = pending.nextState
-
-	sm.approvingTransaction = sm.nextStateTransaction
-
-	// update state manager variables to the new state
-	sm.nextStateTransaction = nil
-	sm.pendingBlocks = make(map[hashing.HashValue]*pendingBlock) // clear pending batches
-	sm.permutation.Shuffle(varStateHash[:])
-	sm.syncMessageDeadline = time.Now() // if not synced then immediately
-	sm.consensusNotifiedOnStateTransition = false
-
-	// publish state transition
-	publisher.Publish("state",
-		sm.chain.ID().String(),
-		strconv.Itoa(int(sm.solidState.BlockIndex())),
-		strconv.Itoa(int(pending.block.Size())),
-		sm.approvingTransaction.ID().String(),
-		varStateHash.String(),
-		fmt.Sprintf("%d", pending.block.Timestamp()),
-	)
-	// publish processed requests
-	for i, reqid := range pending.block.RequestIDs() {
-
-		sm.chain.EventRequestProcessed().Trigger(*reqid)
-
-		publisher.Publish("request_out",
-			sm.chain.ID().String(),
-			reqid.TransactionID().String(),
-			fmt.Sprintf("%d", reqid.Index()),
-			strconv.Itoa(int(sm.solidState.BlockIndex())),
-			strconv.Itoa(i),
-			strconv.Itoa(int(pending.block.Size())),
-		)
-	}
-	return true
-}
-
-func (sm *stateManager) requestStateUpdateFromPeerIfNeeded() {
-	if !sm.solidStateValid || sm.isSynchronized() {
-		// no need for more info when state is synced or solid state still needs validation by the anchor tx
 		return
 	}
-	// state is valid but not synced
-	if !sm.syncMessageDeadline.Before(time.Now()) {
-		// not time yet for the next message
+
+	// found a candidate block which is approved by the stateOutput
+	// set the transaction id from output
+	candidate.block.WithApprovingOutputID(sm.stateOutput.ID())
+	// save state to db
+	if err := candidate.nextState.CommitToDb(candidate.block); err != nil {
+		sm.log.Errorf("failed to save state at index #%d: %v", candidate.nextState.BlockIndex(), err)
 		return
 	}
-	// it is time to ask for the next state update to next peer in the permutation
-	data := util.MustBytes(&chain.GetBlockMsg{
-		PeerMsgHeader: chain.PeerMsgHeader{
-			BlockIndex: sm.solidState.BlockIndex() + 1,
-		},
+	sm.solidState = candidate.nextState
+	sm.blockCandidates = make(map[hashing.HashValue]*candidateBlock) // clear candidate batches
+
+	cloneState := sm.solidState.Clone()
+	go sm.chain.Events().StateTransition().Trigger(&chain.StateTransitionEventData{
+		VirtualState:     cloneState,
+		BlockEssenceHash: candidate.block.EssenceHash(),
+		ChainOutput:      sm.stateOutput,
+		Timestamp:        sm.stateOutputTimestamp,
+		RequestIDs:       candidate.block.RequestIDs(),
 	})
-	// send messages until first without error
-	for i := uint16(0); i < sm.chain.Size(); i++ {
-		if err := sm.chain.SendMsg(sm.permutation.Next(), chain.MsgGetBatch, data); err == nil {
-			break
-		}
-		sm.syncMessageDeadline = time.Now().Add(chain.PeriodBetweenSyncMessages)
-	}
+	go sm.chain.Events().StateSynced().Trigger(sm.stateOutput.ID(), sm.stateOutput.GetStateIndex())
 }
-
-// index of evidenced state index is passed to record the largest one.
-// This is needed to check synchronization status.
-func (sm *stateManager) EvidenceStateIndex(stateIndex uint32) {
-	sm.evidenceStateIndexCh <- stateIndex
-}
-func (sm *stateManager) evidenceStateIndex(stateIndex uint32) {
-	// synced state is when current state index is behind
-	// the largestEvidencedStateIndex no more than by 1 point
-	wasSynchronized := sm.isSynchronized()
-
-	currStateIndex := int32(-1)
-	if sm.solidState != nil {
-		currStateIndex = int32(sm.solidState.BlockIndex())
-	}
-
-	if stateIndex > sm.largestEvidencedStateIndex {
-		sm.largestEvidencedStateIndex = stateIndex
-	}
-	switch {
-	case !sm.isSynchronized() && wasSynchronized:
-		sm.syncMessageDeadline = time.Now()
-		sm.log.Debugf("NOT SYNCED: current state index: %d, largest evidenced index: %d",
-			currStateIndex, sm.largestEvidencedStateIndex)
-	case sm.isSynchronized() && !wasSynchronized:
-		sm.log.Debugf("SYNCED: current state index: %d", sm.solidState.BlockIndex())
-	}
-}
-
-func (sm *stateManager) isSynchronized() bool {
-	if sm.solidState == nil {
-		return false // sm.largestEvidencedStateIndex == 0
-	}
-	return sm.largestEvidencedStateIndex == sm.solidState.BlockIndex()
-}
-
-var niltxid valuetransaction.ID
 
 // adding block of state updates to the 'pending' map
-func (sm *stateManager) addPendingBlock(block state.Block) bool {
-	sm.log.Debugw("addPendingBlock",
-		"block index", block.StateIndex(),
-		"timestamp", block.Timestamp(),
-		"size", block.Size(),
-		"state tx", block.StateTransactionID().String(),
-	)
-
-	if sm.solidStateValid {
-		if block.StateIndex() != sm.solidState.BlockIndex()+1 {
-			// if current state is validated, only interested in the batches of state updates for the next state
-			return false
-		}
+func (sm *stateManager) addBlockCandidate(block state.Block) {
+	if block != nil {
+		sm.log.Debugw("addBlockCandidate",
+			"block index", block.StateIndex(),
+			"timestamp", block.Timestamp(),
+			"size", block.Size(),
+			"approving output", coretypes.OID(block.ApprovingOutputID()),
+		)
 	} else {
-		// initial loading
-		if sm.solidState == nil {
-			// origin state
-			if block.StateIndex() != 0 {
-				sm.log.Errorf("addPendingBlock: expected block index 0 got %d", block.StateIndex())
-				return false
-			}
-		} else {
-			// not origin state, the loaded state must be approved by the transaction
-			if block.StateIndex() != sm.solidState.BlockIndex() {
-				sm.log.Errorf("addPendingBlock: expected block index %d got %d",
-					sm.solidState.BlockIndex(), block.StateIndex())
-				return false
-			}
-		}
+		sm.log.Debugf("addBlockCandidate: add origin candidate block")
+		block = state.MustNewOriginBlock()
 	}
-
-	stateToApprove := sm.createStateToApprove()
-
-	if sm.solidStateValid || sm.solidState == nil {
-		// we need to approve the solidState.
-		// In case of origin, the next state is origin block applied to the empty state
-		if err := stateToApprove.ApplyBlock(block); err != nil {
-			sm.log.Errorw("can't apply update to the current state",
-				"cur state index", sm.solidState.BlockIndex(),
-				"err", err,
-			)
-			return false
-		}
-	}
-
-	// include the bach to pending batches map
-	vh := stateToApprove.Hash()
-	pb, ok := sm.pendingBlocks[vh]
-	if !ok || pb.block.StateTransactionID() == niltxid {
-		pb = &pendingBlock{
-			block:     block,
-			nextState: stateToApprove,
-		}
-		sm.pendingBlocks[vh] = pb
-	}
-
-	sm.log.Debugw("added new pending block",
-		"state index", pb.block.StateIndex(),
-		"state hash", vh.String(),
-		"approving tx", pb.block.StateTransactionID().String(),
-	)
-	// request approving transaction from the node. It may also come without request
-	if block.StateTransactionID() != niltxid {
-		sm.requestStateTransaction(pb)
-	}
-	return true
-}
-
-func (sm *stateManager) createStateToApprove() state.VirtualState {
+	var stateToApprove state.VirtualState
 	if sm.solidState == nil {
-		return state.NewEmptyVirtualState(sm.chain.ID())
+		// ignore parameter and assume original block if solidState == nil
+		stateToApprove = state.NewZeroVirtualState(sm.dbp.GetPartition(sm.chain.ID()))
+	} else {
+		stateToApprove = sm.solidState.Clone()
+		if err := stateToApprove.ApplyBlock(block); err != nil {
+			sm.log.Error("can't apply update to the current state: %v", err)
+			return
+		}
 	}
-	return sm.solidState.Clone()
+	// include the batch to pending batches map
+	vh := stateToApprove.Hash()
+	if sm.solidState == nil && vh.String() != state.OriginStateHashBase58 {
+		sm.log.Panicf("major inconsistency: stateToApprove hash is %s, expected %s", vh.String(), state.OriginStateHashBase58)
+	}
+	sm.blockCandidates[vh] = &candidateBlock{
+		block:     block,
+		nextState: stateToApprove,
+	}
+
+	sm.log.Infof("added new block candidate. State index: %d, state hash: %s", block.StateIndex(), vh.String())
+	sm.pullStateDeadline = time.Now()
 }
 
-// for committed batches request approving transaction if deadline has passed
-func (sm *stateManager) requestStateTransactionIfNeeded() {
-	if sm.nextStateTransaction != nil {
+func (sm *stateManager) storeSyncingData() {
+	if sm.solidState == nil || sm.stateOutput == nil {
 		return
 	}
-	for _, pb := range sm.pendingBlocks {
-		if pb.block.StateTransactionID() != niltxid && pb.stateTransactionRequestDeadline.Before(time.Now()) {
-			sm.requestStateTransaction(pb)
-		}
+	outputStateHash, err := hashing.HashValueFromBytes(sm.stateOutput.GetStateData())
+	if err != nil {
+		return
 	}
-}
-
-func (sm *stateManager) requestStateTransaction(pb *pendingBlock) {
-	txid := pb.block.StateTransactionID()
-	sm.log.Debugf("query transaction from the node. txid = %s", txid.String())
-	_ = nodeconn.RequestConfirmedTransactionFromNode(&txid)
-	pb.stateTransactionRequestDeadline = time.Now().Add(chain.StateTransactionRequestTimeout)
-}
-
-func (sm *stateManager) numPongs() uint16 {
-	ret := uint16(0)
-	for _, f := range sm.pingPong {
-		if f {
-			ret++
-		}
-	}
-	return ret
-}
-
-func (sm *stateManager) numPongsHasQuorum() bool {
-	return sm.numPongs() >= sm.chain.Quorum()-1
-}
-
-func (sm *stateManager) pingPongReceived(senderIndex uint16) {
-	sm.pingPong[senderIndex] = true
-}
-
-func (sm *stateManager) respondPongToPeer(targetPeerIndex uint16) {
-	sm.chain.SendMsg(targetPeerIndex, chain.MsgStateIndexPingPong, util.MustBytes(&chain.StateIndexPingPongMsg{
-		PeerMsgHeader: chain.PeerMsgHeader{
-			BlockIndex: sm.solidState.BlockIndex(),
-		},
-		RSVP: false,
-	}))
-}
-
-func (sm *stateManager) sendPingsToCommitteePeers() {
-	sm.log.Debugf("pinging peers")
-
-	data := util.MustBytes(&chain.StateIndexPingPongMsg{
-		PeerMsgHeader: chain.PeerMsgHeader{
-			BlockIndex: sm.solidState.BlockIndex(),
-		},
-		RSVP: true,
+	sm.currentSyncData.Store(&chain.SyncInfo{
+		Synced:                sm.solidState.Hash() == outputStateHash,
+		SyncedBlockIndex:      sm.solidState.BlockIndex(),
+		SyncedStateHash:       sm.solidState.Hash(),
+		SyncedStateTimestamp:  time.Unix(0, sm.solidState.Timestamp()),
+		StateOutputBlockIndex: sm.stateOutput.GetStateIndex(),
+		StateOutputID:         sm.stateOutput.ID(),
+		StateOutputHash:       outputStateHash,
+		StateOutputTimestamp:  sm.stateOutputTimestamp,
 	})
-	numSent := 0
-	for i, pinged := range sm.pingPong {
-		if pinged {
-			continue
-		}
-		if err := sm.chain.SendMsg(uint16(i), chain.MsgStateIndexPingPong, data); err == nil {
-			numSent++
-		}
-	}
-	sm.log.Debugf("sent pings to %d committee peers", numSent)
-	sm.deadlineForPongQuorum = time.Now().Add(chain.RepeatPingAfter)
 }

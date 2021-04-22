@@ -3,16 +3,16 @@ package state
 import (
 	"bytes"
 	"fmt"
-	"github.com/iotaledger/wasp/packages/dbprovider"
 	"io"
 
 	"github.com/iotaledger/hive.go/kvstore"
+	"github.com/iotaledger/hive.go/kvstore/mapdb"
 	"github.com/iotaledger/wasp/packages/coretypes"
+	"github.com/iotaledger/wasp/packages/dbprovider"
 	"github.com/iotaledger/wasp/packages/hashing"
 	"github.com/iotaledger/wasp/packages/kv"
 	"github.com/iotaledger/wasp/packages/kv/buffered"
 	"github.com/iotaledger/wasp/packages/util"
-	"github.com/iotaledger/wasp/plugins/database"
 )
 
 type virtualState struct {
@@ -26,20 +26,36 @@ type virtualState struct {
 }
 
 func NewVirtualState(db kvstore.KVStore, chainID *coretypes.ChainID) *virtualState {
-	return &virtualState{
-		chainID:   *chainID,
+	ret := &virtualState{
 		db:        db,
 		variables: buffered.NewBufferedKVStore(subRealm(db, []byte{dbprovider.ObjectTypeStateVariable})),
 		empty:     true,
 	}
+	if chainID != nil {
+		ret.chainID = *chainID
+	}
+	return ret
 }
 
-func NewEmptyVirtualState(chainID *coretypes.ChainID) *virtualState {
-	return NewVirtualState(getSCPartition(chainID), chainID)
+func NewZeroVirtualState(db kvstore.KVStore) *virtualState {
+	ret := NewVirtualState(db, nil)
+	originBlock := MustNewOriginBlock()
+	if err := ret.ApplyBlock(originBlock); err != nil {
+		panic(err)
+	}
+	return ret
 }
 
-func getSCPartition(chainID *coretypes.ChainID) kvstore.KVStore {
-	return database.GetPartition(chainID)
+const OriginStateHashBase58 = "4oBFMdSF5zGatLxggeCAPmJcTMj8xNMmxwTwGbEdTLPC"
+
+// OriginStateHash is independent from db provider nor chainID
+func OriginStateHash() hashing.HashValue {
+	emptyVirtualState := NewZeroVirtualState(mapdb.NewMapDB())
+	return emptyVirtualState.Hash()
+}
+
+func getChainPartition(dbp *dbprovider.DBProvider, chainID *coretypes.ChainID) kvstore.KVStore {
+	return dbp.GetPartition(chainID)
 }
 
 func subRealm(db kvstore.KVStore, realm []byte) kvstore.KVStore {
@@ -155,50 +171,64 @@ func (vs *virtualState) Read(r io.Reader) error {
 
 // saves variable state to db atomically with the block of state updates and records of processed requests
 func (vs *virtualState) CommitToDb(b Block) error {
-	batchData, err := util.Bytes(b)
-	if err != nil {
-		return err
+	batch := vs.db.Batched()
+
+	{
+		blockData, err := util.Bytes(b)
+		if err != nil {
+			return err
+		}
+		if err = batch.Set(dbkeyBatch(b.StateIndex()), blockData); err != nil {
+			return err
+		}
 	}
-	batchDbKey := dbkeyBatch(b.StateIndex())
 
-	varStateData, err := util.Bytes(vs)
-	if err != nil {
-		return err
+	{
+		varStateData, err := util.Bytes(vs)
+		if err != nil {
+			return err
+		}
+		if err = batch.Set(dbprovider.MakeKey(dbprovider.ObjectTypeSolidState), varStateData); err != nil {
+			return err
+		}
 	}
-	varStateDbkey := dbprovider.MakeKey(dbprovider.ObjectTypeSolidState)
 
-	solidStateValue := util.Uint32To4Bytes(vs.BlockIndex())
-	solidStateKey := dbprovider.MakeKey(dbprovider.ObjectTypeSolidStateIndex)
-
-	keys := [][]byte{varStateDbkey, batchDbKey, solidStateKey}
-	values := [][]byte{varStateData, batchData, solidStateValue}
+	{
+		solidStateValue := util.Uint32To4Bytes(vs.BlockIndex())
+		if err := batch.Set(dbprovider.MakeKey(dbprovider.ObjectTypeSolidStateIndex), solidStateValue); err != nil {
+			return err
+		}
+	}
 
 	// store processed request IDs
 	// TODO store request IDs in the 'log' contract
 	for _, rid := range b.RequestIDs() {
-		keys = append(keys, dbkeyRequest(rid))
-		values = append(values, []byte{0})
+		if err := batch.Set(dbkeyRequest(rid), []byte{0}); err != nil {
+			return err
+		}
 	}
 
 	// store uncommitted mutations
-	vs.variables.Mutations().IterateLatest(func(k kv.Key, mut buffered.Mutation) bool {
-		keys = append(keys, dbkeyStateVariable(k))
+	for k, v := range vs.variables.Mutations().Sets {
+		if err := batch.Set(dbkeyStateVariable(k), v); err != nil {
+			return err
+		}
+	}
+	for k := range vs.variables.Mutations().Dels {
+		if err := batch.Delete(dbkeyStateVariable(k)); err != nil {
+			return err
+		}
+	}
 
-		// if mutation is MutationDel, mut.Value() = nil and the key is deleted
-		values = append(values, mut.Value())
-		return true
-	})
-
-	err = util.DbSetMulti(vs.db, keys, values)
-	if err != nil {
+	if err := batch.Commit(); err != nil {
 		return err
 	}
 	vs.variables.ClearMutations()
 	return nil
 }
 
-func LoadSolidState(chainID *coretypes.ChainID) (VirtualState, Block, bool, error) {
-	return loadSolidState(getSCPartition(chainID), chainID)
+func LoadSolidState(dbp *dbprovider.DBProvider, chainID *coretypes.ChainID) (VirtualState, Block, bool, error) {
+	return loadSolidState(getChainPartition(dbp, chainID), chainID)
 }
 
 func loadSolidState(db kvstore.KVStore, chainID *coretypes.ChainID) (VirtualState, Block, bool, error) {
@@ -209,20 +239,21 @@ func loadSolidState(db kvstore.KVStore, chainID *coretypes.ChainID) (VirtualStat
 	if err != nil {
 		return nil, nil, false, err
 	}
-	values, err := util.DbGetMulti(db, [][]byte{
-		dbprovider.MakeKey(dbprovider.ObjectTypeSolidState),
-		dbkeyBatch(util.MustUint32From4Bytes(stateIndexBin)),
-	})
-	if err != nil {
-		return nil, nil, false, err
-	}
+
+	var v []byte
 
 	vs := NewVirtualState(db, chainID)
-	if err = vs.Read(bytes.NewReader(values[0])); err != nil {
+	if v, err = db.Get(dbprovider.MakeKey(dbprovider.ObjectTypeSolidState)); err != nil {
+		return nil, nil, false, err
+	}
+	if err = vs.Read(bytes.NewReader(v)); err != nil {
 		return nil, nil, false, fmt.Errorf("loading variable state: %v", err)
 	}
 
-	batch, err := NewBlockFromBytes(values[1])
+	if v, err = db.Get(dbkeyBatch(util.MustUint32From4Bytes(stateIndexBin))); err != nil {
+		return nil, nil, false, err
+	}
+	batch, err := BlockFromBytes(v)
 	if err != nil {
 		return nil, nil, false, fmt.Errorf("loading block: %v", err)
 	}
@@ -236,10 +267,14 @@ func dbkeyStateVariable(key kv.Key) []byte {
 	return dbprovider.MakeKey(dbprovider.ObjectTypeStateVariable, []byte(key))
 }
 
-func dbkeyRequest(reqid *coretypes.RequestID) []byte {
+func dbkeyRequest(reqid coretypes.RequestID) []byte {
 	return dbprovider.MakeKey(dbprovider.ObjectTypeProcessedRequestId, reqid[:])
 }
 
-func IsRequestCompleted(addr *coretypes.ChainID, reqid *coretypes.RequestID) (bool, error) {
-	return getSCPartition(addr).Has(dbkeyRequest(reqid))
+func IsRequestCompleted(chainState kvstore.KVStore, reqid coretypes.RequestID) (bool, error) {
+	return chainState.Has(dbkeyRequest(reqid))
+}
+
+func StoreRequestCompleted(chainState kvstore.KVStore, reqID coretypes.RequestID) error {
+	return chainState.Set(dbkeyRequest(reqID), []byte{0})
 }
