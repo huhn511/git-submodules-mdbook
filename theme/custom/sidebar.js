@@ -6,13 +6,15 @@ console.log(chapterItems)
 chapterItems.forEach(item => {
     // if (item.nextSibling && item.nextSibling.tagName === "LI" && item.nextSibling.classList === undefined) {
     if (item.nextSibling && !item.nextSibling.classList.contains('chapter-item')) {
-        console.log('Is collapsible')
         item.classList.add('collapsible')
         item.addEventListener('click', event => expandChapterItem(item))
-    } else {
-        console.log('Is NOT collapsible')
     }
-    item.classList.remove('expanded')
+    if (item.parentElement && item.parentElement.classList.contains('chapter')) {
+        item.classList.remove('collapsible')
+    }
+    if (item.parentElement && !item.parentElement.classList.contains('chapter')) {
+        item.classList.remove('expanded')
+    }
 })
 
 // Find the one active element which is the a tag inside a chapter-item
